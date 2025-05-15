@@ -1,8 +1,11 @@
 from typing import Union
+from langchain.tools import tool
 
+
+@tool
 def sum_(a: Union[float, int], b: Union[float, int]) -> float:   
     """
-    Runs a sum between a and b.
+    Computes the sum between a and b.
 
     Parameters
     ----------
@@ -18,9 +21,10 @@ def sum_(a: Union[float, int], b: Union[float, int]) -> float:
     """
     return a + b
 
+@tool
 def subtract(a: Union[float, int], b: Union[float, int]) -> float:   
     """
-    Runs a subtract between a and b.
+    Computes the subtract between a and b.
 
     Parameters
     ----------
@@ -36,9 +40,10 @@ def subtract(a: Union[float, int], b: Union[float, int]) -> float:
     """
     return a - b
 
+@tool
 def multiply(a: Union[float, int], b: Union[float, int]) -> float:   
     """
-    Runs a multiply between a and b.
+    Computes the multiply between a and b.
 
     Parameters
     ----------
@@ -54,9 +59,10 @@ def multiply(a: Union[float, int], b: Union[float, int]) -> float:
     """
     return a * b
 
+@tool
 def divide(a: Union[float, int], b: Union[float, int]) -> float:   
     """
-    Runs a divide between a and b.
+    Computes the divide between a and b.
 
     Parameters
     ----------
