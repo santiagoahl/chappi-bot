@@ -1,6 +1,0 @@
-{
-  "dependencies": ["./"],
-  "graphs": {
-    "mvp_agent": "src/agents/react/mvp_agent.py:graph"
-  }
-}

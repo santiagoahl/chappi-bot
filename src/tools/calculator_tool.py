@@ -76,7 +76,10 @@ def divide(a: Union[float, int], b: Union[float, int]) -> float:
         >>> divide(3.0, 1.5)
         2.0
     """
-    return a / b
+    try:
+        return a / b
+    except:
+        raise ValueError("Division By 0.0 not allowed")
 
 
 if __name__=="__main__":
