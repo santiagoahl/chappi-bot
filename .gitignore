@@ -1,9 +1,6 @@
 __pycache__/
 .env
-<<<<<<< HEAD
 .langgraph_api/
-=======
->>>>>>> f9e9330 (bugfix: Debugged TOol observations)
 .venv
 *.log
 .ipynb_checkpoints/
