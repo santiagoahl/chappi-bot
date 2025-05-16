@@ -2,15 +2,21 @@
 
 # Libraries
 from langgraph.graph import START, END, StateGraph
-#from langgraph.checkpoint.memory import MemorySaver 
 from typing import TypedDict, List, Optional, Literal
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage, ToolMessage
+from langchain_core.messages import (
+    HumanMessage,
+    AIMessage,
+    SystemMessage,
+    BaseMessage,
+    ToolMessage,
+)
 from langchain_core.runnables.graph import MermaidDrawMethod
-from langgraph.prebuilt import ToolNode, tools_condition
 import os, sys
 from asyncio import to_thread  # Asyncronous processing
 from dotenv import load_dotenv
+from langgraph.checkpoint.memory import MemorySaver
+# from langgraph.prebuilt import ToolNode, tools_condition
 
 from langfuse.callback import CallbackHandler
 
@@ -23,10 +29,19 @@ from tools import calculator_tool
 # var = "OPENAI_API_KEY"
 # os.env[var] = os.getenv(var)
 MAX_ITERATIONS = 4
+ROOT_DIR = os.path.abspath("./")
+AGENT_PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts/agent/")
 
 load_dotenv()
 
+use_studio = os.getenv("LANGGRAPH_STUDIO", "false").lower() == "true"
 # LLM Model
+
+SYSTEM_MESSAGE = ""
+with open(os.path.join(AGENT_PROMPTS_DIR, "gaia_system_message.md"), "r") as f:
+    for line in f:
+        SYSTEM_MESSAGE += line
+
 model = ChatOpenAI(model="gpt-4o", temperature=0.0)
 langfuse_callback_handler = CallbackHandler()
 
@@ -35,7 +50,7 @@ tools_list = [
     calculator_tool.sum_,
     calculator_tool.subtract,
     calculator_tool.multiply,
-    calculator_tool.divide
+    calculator_tool.divide,
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
@@ -48,10 +63,21 @@ class TaskState(TypedDict):
     iteration: Optional[int]
 
 
-#tools_by_name = {tool.name: tool for tool in tools}
+# tools_by_name = {tool.name: tool for tool in tools}
 tools_by_name = {tool.name: tool for tool in tools_list}  # Q: Does it work?
+
+# Nodes
+def prepare_agent(state: TaskState) -> dict[str, list]:
+    "Agent Start Node, responsible to define Agent behavior"
+    messages = state.get("messages", [])
+    
+    if not any(isinstance(m, SystemMessage) for m in messages):
+        messages.insert(0, SystemMessage(content=SYSTEM_MESSAGE))
+        
+    return {"messages": messages, "iteration": 0}
+
 def tools_node(state: TaskState) -> dict[str, list]:
-    #result = []  # This line has been deleted cause we need to take in account chat history
+    # result = []  # This line has been deleted cause we need to take in account chat history
     result = state.get("messages", [])
     for tool_call in state["messages"][-1].tool_calls:
         tool = tools_by_name[tool_call["name"]]
@@ -59,7 +85,6 @@ def tools_node(state: TaskState) -> dict[str, list]:
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
 
-# Nodes
 def agent(state: TaskState) -> dict:
     """
     Agent node, contains the LLM Model used to process user requests.
@@ -79,8 +104,8 @@ def agent(state: TaskState) -> dict:
         >>> isinstance(output["messages"][-1].content, str)
         True
     """
-    
-# python
+
+    # python
     chat_history = state.get("messages", [])
     iterations = state.get("iteration", 0)
 
@@ -97,27 +122,26 @@ def agent(state: TaskState) -> dict:
     state_update = {"messages": chat_history, "iteration": iterations}
     return state_update
 
-
-    #chat_history = state.get("messages", [])
-    #formatted_messages = [
+    # chat_history = state.get("messages", [])
+    # formatted_messages = [
     #    {
     #        "type": "human" if isinstance(msg, HumanMessage) else "ai",
     #        "content": msg.content,
     #    }
 
     #    for msg in chat_history
-    #]
+    # ]
     #
     ##formatted_messages = [
     ##    SystemMessage(content="You are a helpful assistant.")
     ##] + formatted_messages
-    #formatted_messages = messages_from_dict(formatted_messages)
-    #response = model_with_tools.invoke(formatted_messages)
-    #current_iterations = state.get("iteration", 0)
-    #chat_history.append(response)
+    # formatted_messages = messages_from_dict(formatted_messages)
+    # response = model_with_tools.invoke(formatted_messages)
+    # current_iterations = state.get("iteration", 0)
+    # chat_history.append(response)
 
     ## Handle tool calls if they exist
-    #if hasattr(response, "tool_calls") and response.tool_calls:
+    # if hasattr(response, "tool_calls") and response.tool_calls:
     #    # This will trigger the tool execution in LangGraph
     #    return {
     #        "messages": chat_history + [response],
@@ -129,8 +153,8 @@ def agent(state: TaskState) -> dict:
     ## if isinstance(last_message, AIMessage) and hasattr(last_message, "tool_calls") and last_message.tool_calls:
     ##    print(last_message.tool_calls)
 
-    #output = {"messages": chat_history}
-    #return output
+    # output = {"messages": chat_history}
+    # return output
 
 
 # Conditional Edges
@@ -152,7 +176,7 @@ def should_use_tool(state: TaskState) -> Literal["tools", END]:
         >>> ('arg1', 'arg2')
         'output'
     """
-    
+
     chat_history = state.get("messages", [])
     last_message = chat_history[-1]
     current_iterations = state.get("iteration", 0)
@@ -164,35 +188,37 @@ def should_use_tool(state: TaskState) -> Literal["tools", END]:
     return END
 
 
-
 # Build Graph
+memory = MemorySaver()  # Add persistence
 builder = StateGraph(state_schema=TaskState)
 
+builder.add_node("prepare_agent", prepare_agent)
 builder.add_node("agent", agent)
 builder.add_node("tools", tools_node)
 
-builder.add_edge(START, "agent")
+builder.add_edge(START, "prepare_agent")
+builder.add_edge("prepare_agent", "agent")
 builder.add_conditional_edges(
-    source="agent",
-    path=should_use_tool,#,
-    path_map=["tools", END]
+    source="agent", path=should_use_tool, path_map=["tools", END]
 )
 builder.add_edge("tools", "agent")
 # builder.add_edge("agent", END)
 
-#memory = MemorySaver()
-graph = builder.compile() #(checkpointer=memory)
+# memory = MemorySaver()
+graph = builder.compile() if use_studio else builder.compile(checkpointer=memory)
 
 # Save graph
-#graph_json = graph.to_json()
-#with open("../../langgraph.json", "w") as f:
-#    f.write(graph_json) 
+# graph_json = graph.to_json()
+# with open("../../langgraph.json", "w") as f:
+#    f.write(graph_json)
+
 
 # Save graph image
 async def save_agent_architecture() -> None:
     graph_image_bytes = await to_thread(lambda: graph.get_graph().draw_mermaid_png())
     with open("./images/agent_architecture.png", "wb") as f:
         f.write(graph_image_bytes)
+
 
 # Test app
 def test_app() -> None:
@@ -202,8 +228,13 @@ def test_app() -> None:
     print("Testing App... \n")
     query = str(input("Ingresa tu pregunta: "))
     response = graph.invoke(
-        input={"messages": [HumanMessage(content=query)]},
-        config={"callbacks": [langfuse_callback_handler]} # , "configurable": {"thread_id": "1"}}
+        input={
+            "messages": [HumanMessage(content=query)]
+        },
+        config={
+            "callbacks": [langfuse_callback_handler],
+            "configurable": {"thread_id": "1"}
+        }
     )
 
     for msg in response["messages"]:
@@ -211,6 +242,7 @@ def test_app() -> None:
         content = msg.content
         print(f"{role.upper()}: {content}\n")
     return None
+
 
 if __name__ == "__main__":
     test_app()
