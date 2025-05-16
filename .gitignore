@@ -1,6 +1,6 @@
 __pycache__/
 .env
-.langgraph_api
+.langgraph_api/
 .venv
 *.log
 .ipynb_checkpoints/
