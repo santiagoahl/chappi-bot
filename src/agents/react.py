@@ -1,8 +1,10 @@
+# TODO: Use a Local class for general path management
+
 # This MVP includes no tools even though these are imported
 
 # Libraries
 from langgraph.graph import START, END, StateGraph
-from typing import TypedDict, List, Optional, Literal
+from typing import TypedDict, List, Optional, Literal, Union
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import (
     HumanMessage,
@@ -16,6 +18,7 @@ import os, sys
 from asyncio import to_thread  # Asyncronous processing
 from dotenv import load_dotenv
 from langgraph.checkpoint.memory import MemorySaver
+
 # from langgraph.prebuilt import ToolNode, tools_condition
 
 from langfuse.callback import CallbackHandler
@@ -28,8 +31,8 @@ from tools import calculator_tool
 # Load credentials
 # var = "OPENAI_API_KEY"
 # os.env[var] = os.getenv(var)
-MAX_ITERATIONS = 4
-ROOT_DIR = os.path.abspath("./")
+MAX_ITERATIONS = 7
+ROOT_DIR = "/home/santi/current-projects/chappie/"
 AGENT_PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts/agent/")
 
 load_dotenv()
@@ -66,15 +69,17 @@ class TaskState(TypedDict):
 # tools_by_name = {tool.name: tool for tool in tools}
 tools_by_name = {tool.name: tool for tool in tools_list}  # Q: Does it work?
 
+
 # Nodes
 def prepare_agent(state: TaskState) -> dict[str, list]:
     "Agent Start Node, responsible to define Agent behavior"
     messages = state.get("messages", [])
-    
+
     if not any(isinstance(m, SystemMessage) for m in messages):
         messages.insert(0, SystemMessage(content=SYSTEM_MESSAGE))
-        
+
     return {"messages": messages, "iteration": 0}
+
 
 def tools_node(state: TaskState) -> dict[str, list]:
     # result = []  # This line has been deleted cause we need to take in account chat history
@@ -84,6 +89,7 @@ def tools_node(state: TaskState) -> dict[str, list]:
         observation = tool.invoke(tool_call["args"])
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
+
 
 def agent(state: TaskState) -> dict:
     """
@@ -215,34 +221,65 @@ graph = builder.compile() if use_studio else builder.compile(checkpointer=memory
 
 # Save graph image
 async def save_agent_architecture() -> None:
+# TODO: the new images path is /home/santi/current-projects/chappie/data/images
     graph_image_bytes = await to_thread(lambda: graph.get_graph().draw_mermaid_png())
     with open("./images/agent_architecture.png", "wb") as f:
         f.write(graph_image_bytes)
 
 
+
 # Test app
 def test_app() -> None:
     """
-    Test the Agent behavior
+    Test the Agent behavior, including complete conversation thread
     """
     print("Testing App... \n")
     query = str(input("Ingresa tu pregunta: "))
     response = graph.invoke(
-        input={
-            "messages": [HumanMessage(content=query)]
-        },
+        input={"messages": [HumanMessage(content=query)]},
         config={
             "callbacks": [langfuse_callback_handler],
-            "configurable": {"thread_id": "1"}
-        }
+            "configurable": {"thread_id": "1"},
+        },
     )
 
+    # Show chat history
     for msg in response["messages"]:
         role = msg.type
         content = msg.content
         print(f"{role.upper()}: {content}\n")
     return None
 
+def run_app(user_query: str = None, print_response: bool = False) -> Union[str, float, int]:
+    """
+    Call the agent, developing it for GAIA benchmark questions.
+
+    Returns:
+        Union[str, float, int]: AI Answer
+
+    Example:
+        >>> import react  # Ensure to include this module to sys path
+        >>> react.run()
+        >>> Pass your question:
+        >>> Calculate the result of: (12 multiplied by 3) minus (15 divided by 5) plus (8 added to 2)
+        '43.0'
+    """
+    
+    query = user_query if user_query else input("Pass your question: ")
+    response = graph.invoke(
+        input={"messages": [HumanMessage(content=query)]},
+        config={
+            "callbacks": [langfuse_callback_handler],
+            "configurable": {"thread_id": "1"},
+        },
+    )
+    ai_answer = response.get("messages", [])[-1].content
+    
+    if print_response:
+        print(ai_answer)
+        
+    return ai_answer
+
 
 if __name__ == "__main__":
-    test_app()
+    run_app(print_response=True)
