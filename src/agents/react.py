@@ -27,7 +27,7 @@ from langfuse.callback import CallbackHandler
 
 sys.path.append(os.path.abspath("src"))
 # sys.path.append(os.path.abspath("src/tools"))
-from tools import calculator, search
+from tools import calculator, search, code_executor
 
 # Load credentials
 # var = "OPENAI_API_KEY"
@@ -55,7 +55,8 @@ tools_list = [
     calculator.subtract,
     calculator.multiply,
     calculator.divide,
-    search.web_search
+    search.web_search,
+    code_executor.code_executor
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
