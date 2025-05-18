@@ -14,10 +14,11 @@ from langchain_core.messages import (
     ToolMessage,
 )
 from langchain_core.runnables.graph import MermaidDrawMethod
-import os, sys
+from langgraph.checkpoint.memory import MemorySaver
+
 from asyncio import to_thread  # Asyncronous processing
 from dotenv import load_dotenv
-from langgraph.checkpoint.memory import MemorySaver
+import os, sys
 
 # from langgraph.prebuilt import ToolNode, tools_condition
 
@@ -26,7 +27,7 @@ from langfuse.callback import CallbackHandler
 
 sys.path.append(os.path.abspath("src"))
 # sys.path.append(os.path.abspath("src/tools"))
-from tools import calculator_tool
+from tools import calculator, search
 
 # Load credentials
 # var = "OPENAI_API_KEY"
@@ -50,10 +51,11 @@ langfuse_callback_handler = CallbackHandler()
 
 # TODO: define the tools list smarter (e.g. using **)
 tools_list = [
-    calculator_tool.sum_,
-    calculator_tool.subtract,
-    calculator_tool.multiply,
-    calculator_tool.divide,
+    calculator.sum_,
+    calculator.subtract,
+    calculator.multiply,
+    calculator.divide,
+    search.web_search
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
