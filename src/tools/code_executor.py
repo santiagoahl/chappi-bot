@@ -44,6 +44,7 @@ def code_executor(src_code: str) -> str:
 
 
 if __name__ == "__main__":
+    # TODO: include multiline function to run code in the terminal
     code = input("Write your python code " + "\n" + ("=" * 20) + "\n")
     output = code_executor.invoke(input=code)
     print(output)
