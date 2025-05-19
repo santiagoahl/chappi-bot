@@ -1,4 +1,3 @@
-````markdown
 # 🤖 Chappie
 
 Chappie is a lightweight AI assistant agent built using the **React architecture** with [LangGraph](https://docs.langgraph.dev/). It is designed to reason, plan, and execute actions using tools in a flexible and modular workflow.
@@ -76,10 +75,3 @@ python main.py
 ## 📄 License
 
 MIT License.
-
-```
-
----
-
-¿Quieres que también genere el archivo `.env.example` con las variables esperadas?
-```
