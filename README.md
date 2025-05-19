@@ -65,10 +65,8 @@ The logic is built using **LangGraph**, which provides a composable and stateful
 You can invoke Chappie using:
 
 ```bash
-python main.py
+python -m sr.agents.react
 ```
-
-(Replace `main.py` with the actual entry point.)
 
 ---
 
