@@ -26,7 +26,7 @@ from langfuse.callback import CallbackHandler
 
 
 sys.path.append(os.path.abspath("src"))
-# sys.path.append(os.path.abspath("src/tools"))
+sys.path.append(os.path.abspath("src/tools"))
 from tools import calculator, search, code_executor
 
 # Load credentials
