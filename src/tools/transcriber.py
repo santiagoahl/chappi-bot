@@ -2,16 +2,14 @@ import whisper
 from langchain_core.tools import tool
 
 @tool
-def transcriber(audio_path: str, ai_model, use_gpu: bool = False) -> str:
+def transcriber(audio_path: str, use_gpu: bool = False) -> str:
     """
     Transcribes an audio file
 
     Parameters
     ----------
-    audio_path : str
-        Path to the audio file
-    ai_model
-        audio-to-text AI model. If None, a tiny-size Whisper model will be created
+    audio_path : str or Path
+        Path to an existing audio file (e.g., .wav, .mp3). Must be readable by ffmpeg.
     use_gpu: bool
         Pass True if you are in a colab GPU environment or you have an integrated Nvidia GPU
     
@@ -19,13 +17,12 @@ def transcriber(audio_path: str, ai_model, use_gpu: bool = False) -> str:
         str: Text of the transcript 
     """
     
-    if ai_model is None:
-        model_size = "tiny"
-        ai_model = (
-            whisper.load_model(model_size).cuda()
-            if use_gpu
-            else whisper.load_model(model_size)
-        )
+    model_size = "tiny"
+    ai_model = (
+        whisper.load_model(model_size).cuda()
+        if use_gpu
+        else whisper.load_model(model_size)
+    )
         
     raw_transcript = ai_model.transcribe(
         audio_path,
@@ -38,3 +35,7 @@ def transcriber(audio_path: str, ai_model, use_gpu: bool = False) -> str:
     transcript = raw_transcript["text"]
     
     return transcript
+
+if __name__ == "__main__":
+    audio_path = input("Pass your audio path to transcribe: ")
+    print("Transcription:\n", "=" * 30, transcriber(audio_path))

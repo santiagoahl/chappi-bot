@@ -6,17 +6,15 @@ import os
 os.sys.path.append("../agents")
 import react
 
-
-def eval_answer(row: pd.Series) -> Literal[0, 1]:
+def evaluate_response(row: pd.Series) -> Literal[0, 1]:
     """
     Evaluate Agent responses of GAIA-like answers. Exact match is mandatory for good responses
 
     Parameters
     ----------
-    model_response: str
-        Model response to the question
-    gt_answer: str
-        Ground truth answer to the question
+    
+    row: pd.Series
+        Array containing fields 'Agent response' and 'Final answer'
 
     Returns:
         Literal[0, 1]: 0 if the answer is not correct, 1 otherwise
@@ -24,10 +22,14 @@ def eval_answer(row: pd.Series) -> Literal[0, 1]:
     Example:
         >>> results_df["is_correct"] = results_df.apply(func=eval_answer, axis=1)
     """
-    model_response = row["Agent response"]
-    gt_answer = row["Final answer"]
-    return 1 if (model_response == gt_answer) else 0
-
+    model_res = row["Agent response"]
+    gt_ans = row["Final answer"]
+    score = gaia_scorer.question_scorer(
+        model_answer=model_res, 
+        ground_truth=gt_ans
+    )
+    score = int(score) 
+    return score
 
 def get_agent_response(row: pd.Series) -> str:
     """
@@ -36,7 +38,7 @@ def get_agent_response(row: pd.Series) -> str:
     Parameters
     ----------
     row : pd.Series
-        Series with with a field "Question"
+        Series containing fields 'Question' and 'file_path' 
     agent
         Agent module with integrate function .run_app()
 
