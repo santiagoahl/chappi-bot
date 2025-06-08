@@ -5,6 +5,7 @@ import os
 
 os.sys.path.append("../agents")
 import react
+import gaia_scorer
 
 def evaluate_response(row: pd.Series) -> Literal[0, 1]:
     """
