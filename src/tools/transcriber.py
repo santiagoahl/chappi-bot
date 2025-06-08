@@ -1,5 +1,6 @@
 import whisper
 from langchain_core.tools import tool
+import os
 
 @tool
 def transcriber(audio_path: str, use_gpu: bool = False) -> str:
@@ -37,5 +38,6 @@ def transcriber(audio_path: str, use_gpu: bool = False) -> str:
     return transcript
 
 if __name__ == "__main__":
-    audio_path = input("Pass your audio path to transcribe: ")
-    print("Transcription:\n", "=" * 30, transcriber(audio_path))
+    audio_path = "~/.cache/huggingface/hub/datasets--gaia-benchmark--GAIA/snapshots/897f2dfbb5c952b5c3c1509e648381f9c7b70316/2023/validation/99c9cc74-fdc8-46c6-8f8d-3ce2d3bfeea3.mp3"#input("Pass your audio path to transcribe: ")
+    audio_path = os.path.expanduser(audio_path)
+    print("=" * 30, "Transcription\n", "=" * 30, "\n", transcriber(audio_path))
