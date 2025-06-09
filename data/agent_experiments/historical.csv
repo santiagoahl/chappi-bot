@@ -1,3 +1,0 @@
-iteration,agent,tools,accuracy
-1,React agent,Aritmetic,0.0
-2,React agent,"Aritmetic, Search, Code",0.17

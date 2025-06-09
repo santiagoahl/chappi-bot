@@ -13,3 +13,4 @@ venv/
 .coverage
 .hypothesis/
 .mypy_cache/
+./data/temp-data/
