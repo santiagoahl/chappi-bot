@@ -4,8 +4,7 @@ Chappie is a lightweight AI assistant agent built using the ********React archit
 
 ---
 
-![Captura de pantalla 2025-05-16 005150](__https://github.com/user-attachments/assets/20c96271-6f72-477a-80b6-89fa72008714__)
-
+![clipped_langgraph_demo](https://github.com/user-attachments/assets/8bfea6ad-71ae-4715-ae00-f7f76ac8d8d8)
 
 ## **🛠️ Setup**
 
