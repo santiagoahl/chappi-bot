@@ -26,19 +26,19 @@ from langfuse.callback import CallbackHandler
 
 
 sys.path.append(os.path.abspath("src"))
-# sys.path.append(os.path.abspath("src/tools"))
-from tools import calculator, search, code_executor
+sys.path.append(os.path.abspath("src/tools"))
+from tools import calculator, search, code_executor, transcriber, post_processing
 
 # Load credentials
 # var = "OPENAI_API_KEY"
 # os.env[var] = os.getenv(var)
 MAX_ITERATIONS = 7
-ROOT_DIR = "/home/santi/current-projects/chappie/"
+ROOT_DIR = "/home/santiagoal/current-projects/chappie/"
 AGENT_PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts/agent/")
 
 load_dotenv()
 
-use_studio = os.getenv("LANGGRAPH_STUDIO", "false").lower() == "true"
+use_studio = os.getenv("LANGGRAPH_STUDIO", "true").lower() == "true"  # BUG
 # LLM Model
 
 SYSTEM_MESSAGE = ""
@@ -56,7 +56,9 @@ tools_list = [
     calculator.multiply,
     calculator.divide,
     search.web_search,
-    code_executor.code_executor
+    code_executor.code_executor,
+    transcriber.transcriber, 
+    post_processing.sort_items_and_format
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
@@ -224,7 +226,7 @@ graph = builder.compile() if use_studio else builder.compile(checkpointer=memory
 
 # Save graph image
 async def save_agent_architecture() -> None:
-# TODO: the new images path is /home/santi/current-projects/chappie/data/images
+# TODO: the new images path is /home/santiagoal/current-projects/chappie/data/images
     graph_image_bytes = await to_thread(lambda: graph.get_graph().draw_mermaid_png())
     with open("./images/agent_architecture.png", "wb") as f:
         f.write(graph_image_bytes)
