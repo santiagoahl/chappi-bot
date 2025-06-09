@@ -10,7 +10,7 @@ def transcriber(audio_path: str, use_gpu: bool = False) -> str:
     Parameters
     ----------
     audio_path : str or Path
-        Path to an existing audio file (e.g., .wav, .mp3). Must be readable by ffmpeg.
+        Path to an existing audio file (e.g. .wav, .mp3). Must be readable by ffmpeg.
     use_gpu: bool
         Pass True if you are in a colab GPU environment or you have an integrated Nvidia GPU
     
