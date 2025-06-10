@@ -25,25 +25,33 @@ def read_df(path: str) -> pd.DataFrame:
     return pd.read_csv(path)
 
 @tool
-def query_df(df: pd.DataFrame, query: str) -> pd.DataFrame:
+def query_df(df, query: str):
     """
     Query DataFrame. Uses pandas.DataFrame.query built-in method.
 
     Parameters
     ----------
-    df : pd.DataFrame
-        Data Object
+    df 
+        Data Frame Object
     query: str
         Expression
     
     Returns:
-        pd.DataFrame: Queried data object
+        Queried data object
     
     Example:
         >>> queried_df = query_df.invoke({"df": df, "query": "accuracy > 0.1"})
         >>> queried_df.shape
         '(10, 5)'
     """
+    
+    import pandas as pd
+
+    if not isinstance(df, pd.DataFrame):
+        temp_data = df
+        df = pd.DataFrame(temp_data)
+        del temp_data
+        
     return df.query(query)
 
 
