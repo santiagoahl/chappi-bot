@@ -34,6 +34,7 @@ from tools import (
     transcriber,
     post_processing,
     handle_text,
+    pandas_toolbox,
 )
 
 # Load credentials
@@ -67,6 +68,8 @@ tools_list = [
     transcriber.transcriber,
     post_processing.sort_items_and_format,
     handle_text.handle_text,
+    pandas_toolbox.read_df,
+    pandas_toolbox.query_df,
 ]
 
 # ToolNode(tools=tools_list, name="tools", )

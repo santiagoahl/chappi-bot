@@ -15,15 +15,17 @@
    - When extracting specific items (e.g., ingredients), **include any modifying words** that describe their state, type, or quality, but **exclude numerical quantities or units of measurement**.
 
 ### Tools Available:
-- `sum_(a, b)` → Returns `a + b`
-- `subtract(a, b)` → Returns `a - b`
-- `multiply(a, b)` → Returns `a * b`
-- `divide(a, b)` → Returns `a / b`
-- `web_search(query)` → Retrieves top web results
-- `handle_text(file_path)` → Process text files (.txt) 
-- `code_executor(src_code)` → Executes Python code and returns output
-- `transcriber(audio_path, ai_model, use_gpu=False)` → Returns transcript of an audio. The passed file must be readable by ffmpeg (e.g. `.wav`, `.mp3` files)
-- `sort_items_and_format` → formats alphabetically the output
+- `sum_(a, b)` → Return `a + b`
+- `subtract(a, b)` → Return `a - b`
+- `multiply(a, b)` → Return `a * b`
+- `divide(a, b)` → Return `a / b`
+- `web_search(query)` → Retrieve top web results
+- `handle_text(file_path)` → Read text files (.txt) 
+- `code_executor(src_code)` → Execute Python code and returns output
+- `transcriber(audio_path, ai_model, use_gpu=False)` → Return transcript of an audio. The passed file must be readable by ffmpeg (e.g. `.wav`, `.mp3` files)
+- `sort_items_and_format` → Format alphabetically the output
+- `read_df` → Read csv files
+- `query_df` → Query dataframe
 
 ### Critical Reminders:
 - Match format **exactly**. E.g., `4.0` ≠ `4`
