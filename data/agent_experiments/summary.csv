@@ -3,3 +3,6 @@ iteration,experiment,agent,tools,accuracy
 2,Implement Search and Code tools,React agent,"Aritmetic, Search, Code",0.17
 3,Integrate Whisper Audio Transcriber,React agent,"Aritmetic, Search, Code, Audio Transcriber",0.15
 4,Test Workflow,React agent,"Aritmetic, Search, Code, Audio Transcriber, ",0.2
+5,Integrate Text processing tool,React agent,"Aritmetic, Search, Code, Audio Transcriber, Text Handler",0.1
+6,Integrate Text Handler tool,React agent,"Aritmetic, Search, Code, Audio Transcriber, Text Handler, Text Handler",0.2
+7,Test Agent performance against tasks with attached .txt files,React agent,"Aritmetic, Search, Code, Audio Transcriber, Text Handler, Text Handler, , ",0.0
