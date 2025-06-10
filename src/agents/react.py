@@ -35,6 +35,7 @@ from tools import (
     post_processing,
     handle_text,
     pandas_toolbox,
+    handle_json,
 )
 
 # Load credentials
@@ -70,6 +71,7 @@ tools_list = [
     handle_text.handle_text,
     pandas_toolbox.read_df,
     pandas_toolbox.query_df,
+    handle_json.handle_json,
 ]
 
 # ToolNode(tools=tools_list, name="tools", )

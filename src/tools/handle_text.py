@@ -39,11 +39,11 @@ def handle_text(file_path: str) -> str:  # Q: How to validate file endswith txt?
 
 
 if __name__ == "__main__":
-    print("Testing process")
-    print("Processing text")
-    path = "~/santiagoal/current-projects/chappie/data/temp-data/temp_text.txt"
-    text = handle_text(path)
-    print("The text has been processed")
+    print("Testing process...\n", "-" * 50, "\n")
+    print("Processing text...\n", "-" * 50, "\n")
+    path = "data/temp-data/temp_text.txt"
+    text = handle_text.invoke({'file_path': path})
+    print("The text has been processed...\n", "-" * 50, "\n")
     print(text)
 
 # TODO: implement pydantic to validate data
