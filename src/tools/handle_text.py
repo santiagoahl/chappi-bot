@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print("Testing process")
     print("Processing text")
     path = "~/santiagoal/current-projects/chappie/data/temp-data/temp_text.txt"
-    text = handlle_text(path)
+    text = handle_text(path)
     print("The text has been processed")
     print(text)
 
