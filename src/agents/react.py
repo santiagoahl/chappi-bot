@@ -27,7 +27,14 @@ from langfuse.callback import CallbackHandler
 
 sys.path.append(os.path.abspath("src"))
 sys.path.append(os.path.abspath("src/tools"))
-from tools import calculator, search, code_executor, transcriber, post_processing
+from tools import (
+    calculator,
+    search,
+    code_executor,
+    transcriber,
+    post_processing,
+    handle_text,
+)
 
 # Load credentials
 # var = "OPENAI_API_KEY"
@@ -57,8 +64,9 @@ tools_list = [
     calculator.divide,
     search.web_search,
     code_executor.code_executor,
-    transcriber.transcriber, 
-    post_processing.sort_items_and_format
+    transcriber.transcriber,
+    post_processing.sort_items_and_format,
+    handle_text.handle_text,
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
@@ -226,11 +234,10 @@ graph = builder.compile() if use_studio else builder.compile(checkpointer=memory
 
 # Save graph image
 async def save_agent_architecture() -> None:
-# TODO: the new images path is /home/santiagoal/current-projects/chappie/data/images
+    # TODO: the new images path is /home/santiagoal/current-projects/chappie/data/images
     graph_image_bytes = await to_thread(lambda: graph.get_graph().draw_mermaid_png())
     with open("./images/agent_architecture.png", "wb") as f:
         f.write(graph_image_bytes)
-
 
 
 # Test app
@@ -255,7 +262,10 @@ def test_app() -> None:
         print(f"{role.upper()}: {content}\n")
     return None
 
-def run_app(user_query: str = None, print_response: bool = False) -> Union[str, float, int]:
+
+def run_app(
+    user_query: str = None, print_response: bool = False
+) -> Union[str, float, int]:
     """
     Call the agent, developing it for GAIA benchmark questions.
 
@@ -269,7 +279,7 @@ def run_app(user_query: str = None, print_response: bool = False) -> Union[str, 
         >>> Calculate the result of: (12 multiplied by 3) minus (15 divided by 5) plus (8 added to 2)
         '43.0'
     """
-    
+
     query = user_query if user_query else input("Pass your question: ")
     response = graph.invoke(
         input={"messages": [HumanMessage(content=query)]},
@@ -279,10 +289,10 @@ def run_app(user_query: str = None, print_response: bool = False) -> Union[str, 
         },
     )
     ai_answer = response.get("messages", [])[-1].content
-    
+
     if print_response:
         print(ai_answer)
-        
+
     return ai_answer
 
 

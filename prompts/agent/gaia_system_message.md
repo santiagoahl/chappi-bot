@@ -20,6 +20,7 @@
 - `multiply(a, b)` → Returns `a * b`
 - `divide(a, b)` → Returns `a / b`
 - `web_search(query)` → Retrieves top web results
+- `handle_text(file_path)` → Process text files (.txt) 
 - `code_executor(src_code)` → Executes Python code and returns output
 - `transcriber(audio_path, ai_model, use_gpu=False)` → Returns transcript of an audio. The passed file must be readable by ffmpeg (e.g. `.wav`, `.mp3` files)
 - `sort_items_and_format` → formats alphabetically the output
