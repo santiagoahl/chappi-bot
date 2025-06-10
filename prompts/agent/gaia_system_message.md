@@ -26,6 +26,7 @@
 - `sort_items_and_format` → Format alphabetically the output
 - `read_df` → Read csv files
 - `query_df` → Query dataframe
+- `handle_json` → Read json files
 
 ### Critical Reminders:
 - Match format **exactly**. E.g., `4.0` ≠ `4`
