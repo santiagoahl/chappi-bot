@@ -54,6 +54,7 @@ def get_agent_response(row: pd.Series) -> str:
     raw_user_query = row["Question"]
     attached_files = row["file_path"]
     user_query = f"User request:{raw_user_query}\nAttached files: {attached_files if attached_files is not None else 'None'}"
+    print(f"attached_files: {attached_files}")
 
     agent_response = react.run_app(user_query=user_query)
     agent_response = str(agent_response)
