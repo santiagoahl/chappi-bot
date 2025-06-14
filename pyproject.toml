@@ -5,6 +5,7 @@ description = "An AI assistant ready to make your life easier"
 authors = ["santiagoal <santiago.ahumada.1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.11,<4.0"
@@ -19,14 +20,18 @@ black = ">=25.1.0,<26.0.0"
 pyppeteer = "^2.0.0"
 langfuse = "^2.60.4"
 langgraph-cli = {extras = ["inmem"], version = "^0.2.10"}
-datasets = "^3.6.0"
 tavily-python = "^0.7.2"
 openai-whisper = "^20240930"
 huggingface-hub = "^0.32.4"
 ffmpeg = "^1.4"
+llvmlite = ">=0.40"
+pandas = "^2.3.0"
+datasets = "^3.6.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
+numba = ">=0.58"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
