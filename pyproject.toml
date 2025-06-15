@@ -27,6 +27,11 @@ ffmpeg = "^1.4"
 llvmlite = ">=0.40"
 pandas = "^2.3.0"
 datasets = "^3.6.0"
+numpy = ">=1.26.0,<2.2.0"
+tensorflow = ">=2.19.0,<3.0.0"
+opencv-python = "^4.11.0.86"
+pyarrow = "^20.0.0"
+svglib = "^1.5.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
