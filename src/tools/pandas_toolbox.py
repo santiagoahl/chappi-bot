@@ -52,7 +52,7 @@ def query_df(df, query: str):
         df = pd.DataFrame(temp_data)
         del temp_data
         
-    return df.query(query)
+    return df.query(query)  # OPTIMIZE: to_markdown method + tabulate dependency
 
 
 if __name__ == "__main__":
