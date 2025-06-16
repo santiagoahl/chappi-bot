@@ -8,7 +8,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.11,<4.0"
+python = ">=3.11,<3.13"
 langchain = ">=0.3.25,<0.4.0"
 langchain-openai = ">=0.3.16,<0.4.0"
 langchain-core = ">=0.3.59,<0.4.0"
@@ -28,10 +28,13 @@ llvmlite = ">=0.40"
 pandas = "^2.3.0"
 datasets = "^3.6.0"
 numpy = ">=1.26.0,<2.2.0"
-tensorflow = ">=2.19.0,<3.0.0"
 opencv-python = "^4.11.0.86"
 pyarrow = "^20.0.0"
 svglib = "^1.5.1"
+scipy = "^1.15.3"
+board-to-fen = "^0.1.1"
+tensor = "^0.3.6"
+keras = "^3.10.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
