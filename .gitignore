@@ -14,3 +14,4 @@ venv/
 .hypothesis/
 .mypy_cache/
 ./data/temp-data/
+./external/chess-engines/stockfish
