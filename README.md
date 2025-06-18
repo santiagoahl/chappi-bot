@@ -75,3 +75,17 @@ python -m src.agents.react
 ## **📄 License**
 
 MIT License.
+
+
+--- 
+
+# TODO
+
+1. Include tutorial to download stockfish ->
+```bash
+wget https://github.com/official-stockfish/Stockfish/archive/refs/tags/sf_17.1.zip
+sudo apt-get install unzip
+unzip sf_17.1.zip -d .
+rm sf_17.1.zip
+```
+2. Include source code references -> [Terms of Use](https://official-stockfish.github.io/docs/stockfish-wiki/Developers.html#terms-of-use:~:text=some%20way%2C%20you-,MUST,-always%20include%20the)
