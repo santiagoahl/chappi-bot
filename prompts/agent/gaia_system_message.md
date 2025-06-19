@@ -27,7 +27,7 @@
 - `read_df` → Read csv files
 - `query_df` → Query dataframe
 - `handle_json` → Read json files
-- `extract_fen_position` → Chess Tasks. Extract FEN position from Chess Board Image.
+- `extract_fen_position` → Chess Tasks. Extract FEN position from Chess Board Image. To set black_view func parameter, 
 - `predict_next_best_move` → Chess Tasks. Predict next FEN move from FEN position.
 
 ### Critical Reminders:
