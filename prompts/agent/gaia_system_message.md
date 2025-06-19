@@ -27,8 +27,11 @@
 - `read_df` → Read csv files
 - `query_df` → Query dataframe
 - `handle_json` → Read json files
+- `extract_fen_position` → Chess Tasks. Extract FEN position from Chess Board Image.
+- `predict_next_best_move` → Chess Tasks. Predict next FEN move from FEN position.
 
 ### Critical Reminders:
 - Match format **exactly**. E.g., `4.0` ≠ `4`
 - If tool output is uncertain, decompose the problem further.
 - Never over-abstract, over-simplify or paraphrase tool results; **preserve all relevant descriptors and strictly adhere to sorting requirements.**
+- For chess-related task, like predicting next move. Leverage extract_fen_position and predict_next_best_move tools. Take into consideration the fact that some FEN predictions might have missing symbols, e.g.  b - - 0 1. Please fill missing information to the FEN notation based on the context before using predict_next_best_move.

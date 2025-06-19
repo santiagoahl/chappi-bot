@@ -3,13 +3,14 @@ from board_to_fen.predict import get_fen_from_image
 import chess as c
 import chess.engine as ce
 import os
+from langchain.tools import tool
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 STOCKFISH_EXECUTABLE_PATH = (
     "external/chess-engines/stockfish/stockfish-ubuntu-x86-64-avx2"
 )
 
-
+@tool
 def extract_fen_position(path_to_chess_img: str) -> str:
     """
     GET the FEN position from chess 2D board.
@@ -30,7 +31,7 @@ def extract_fen_position(path_to_chess_img: str) -> str:
     fen = get_fen_from_image(img, black_view=True)
     return fen
 
-
+@tool
 def predict_next_best_move(
     fen_position: str, path_to_stockfish: str = STOCKFISH_EXECUTABLE_PATH
 ) -> str:
@@ -40,7 +41,9 @@ def predict_next_best_move(
     Parameters
     ----------
     fen_position : str
-        FEN notation for the Chess Image
+        FEN notation for the Chess Image. Must have the following syntax
+        syntax: [Piece Placement] [Active Color] [Castling Availability] [En Passant Target Square] [Halfmove Clock] [Fullmove Number]
+        
 
     Returns:
         str: Predicted next best move in FEN notation
