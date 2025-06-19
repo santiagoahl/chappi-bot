@@ -36,6 +36,7 @@ from tools import (
     handle_text,
     pandas_toolbox,
     handle_json,
+    chess_tool
 )
 
 # Load credentials
@@ -72,6 +73,8 @@ tools_list = [
     pandas_toolbox.read_df,
     pandas_toolbox.query_df,
     handle_json.handle_json,
+    chess_tool.extract_fen_position,
+    chess_tool.predict_next_best_move, 
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
