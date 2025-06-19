@@ -1,5 +1,5 @@
-from PIL import Image
-from board_to_fen.predict import get_fen_from_image
+#from PIL import Image
+from board_to_fen.predict import get_fen_from_image_path
 import chess as c
 import chess.engine as ce
 import os
@@ -11,24 +11,26 @@ STOCKFISH_EXECUTABLE_PATH = (
 )
 
 @tool
-def extract_fen_position(path_to_chess_img: str) -> str:
+def extract_fen_position(path_to_chess_img: str, black_view: bool = True) -> str:
     """
     GET the FEN position from chess 2D board.
 
     Parameters
     ----------
     path_to_chess_img : str
-        Description
+        file path to chess board, must have png, jpg, jpeg formats
+
+    black_view: bool
+        Set to True iff the board is viewed from Black's perspective
 
     Returns:
         str: Predicted Chess position in FEN notation
 
     Example:
-        >>> extract_fen_position("chess_board.png)
+        >>> extract_fen_position("chess_board.png")
         'r1bqkbnr/pppp1ppp/2n5/4p3/1b2P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 2 4'
     """
-    img = Image.open(path_to_chess_img)
-    fen = get_fen_from_image(img, black_view=True)
+    fen = get_fen_from_image_path(path_to_chess_img, black_view=black_view)
     return fen
 
 @tool
