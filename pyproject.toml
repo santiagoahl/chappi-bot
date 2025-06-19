@@ -31,14 +31,15 @@ numpy = ">=1.26.0,<2.2.0"
 opencv-python = "^4.11.0.86"
 pyarrow = "^20.0.0"
 svglib = "^1.5.1"
-board-to-fen = "^0.1.1"
 tensor = "^0.3.6"
-tensorflow = "2.11.0"
-keras = "2.11.0"
+tensorflow = "2.17.1"
+keras = "3.2.1"
 matplotlib = "<3.10"
 scipy = "<1.11"
 python-chess = "^1.999"
 cairosvg = "^2.8.2"
+board_to_fen = { path = "external/chess-modules/board_to_fen" }
+easyocr = "^1.7.2"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
