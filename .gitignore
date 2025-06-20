@@ -14,4 +14,5 @@ venv/
 .hypothesis/
 .mypy_cache/
 ./data/temp-data/
+./external/*
 ./external/chess-modules/
