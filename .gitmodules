@@ -1,0 +1,3 @@
+[submodule "external/chess-modules/board_to_fen"]
+	path = external/chess-modules/board_to_fen
+	url = git@github.com:santiagoahl/board_to_fen.git

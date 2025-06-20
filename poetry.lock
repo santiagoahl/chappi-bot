@@ -348,23 +348,6 @@ files = [
 forbiddenfruit = {version = ">=0.1.4", markers = "implementation_name == \"cpython\""}
 
 [[package]]
-name = "board-to-fen"
-version = "0.1.2"
-description = "Convert chessboard images to FEN notation using a CNN model."
-optional = false
-python-versions = ">=3.9,<3.13"
-files = []
-develop = false
-
-[package.dependencies]
-keras = "3.2.1"
-tensorflow = "2.17.1"
-
-[package.source]
-type = "directory"
-url = "external/chess-modules/board_to_fen"
-
-[[package]]
 name = "cairocffi"
 version = "1.7.1"
 description = "cffi-based cairo bindings for Python"
@@ -7014,4 +6997,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.23, <=3.12.3"
-content-hash = "ab32dd69679dac901aec1751787010b1a80926f897d3b11b101b7ce16cf849b2"
+content-hash = "b26c72706d9a4ba7611cbf9524ce89f1502663f7d9d35bc769713d0f2f9014b6"
