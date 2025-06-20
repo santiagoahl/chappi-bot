@@ -1,6 +1,5 @@
+# Include board_to fen as submodule
+# This version is a forked github repo, the source code can be found at https://github.com/mcdominik/board_to_fen
 [submodule "external/chess-modules/board_to_fen"]
 	path = external/chess-modules/board_to_fen
 	url = git@github.com:santiagoahl/board_to_fen.git
-[submodule "external/chess-modules/Stockfish"]
-	path = external/chess-modules/Stockfish
-	url = git@github.com:official-stockfish/Stockfish.git
