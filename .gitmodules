@@ -1,0 +1,6 @@
+[submodule "external/chess-modules/board_to_fen"]
+	path = external/chess-modules/board_to_fen
+	url = git@github.com:santiagoahl/board_to_fen.git
+[submodule "external/chess-modules/Stockfish"]
+	path = external/chess-modules/Stockfish
+	url = git@github.com:official-stockfish/Stockfish.git
