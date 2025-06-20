@@ -12,9 +12,16 @@ import cv2
 from typing import Dict
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-STOCKFISH_EXECUTABLE_PATH = (
-    "external/chess-modules/stockfish/stockfish-ubuntu-x86-64-avx2"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+STOCKFISH_EXECUTABLE_PATH = os.path.join(
+    BASE_DIR,
+    '../../external/chess-modules/stockfish/stockfish-ubuntu-x86-64-avx2'
 )
+
+STOCKFISH_EXECUTABLE_PATH = os.path.normpath(STOCKFISH_EXECUTABLE_PATH)
+
 
 @tool
 def grab_board_view(chess_img_path: str) -> Dict:
