@@ -39,6 +39,8 @@ python-chess = "^1.999"
 cairosvg = "^2.8.2"
 board_to_fen = { path = "external/chess-modules/board_to_fen" }
 easyocr = "^1.7.2"
+pytubefix = "^9.2.0"
+ultralytics = "^8.3.158"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
