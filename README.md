@@ -84,12 +84,16 @@ MIT License.
 
 1. Include tutorial to download stockfish ->
 ```bash
-wget https://github.com/official-stockfish/Stockfish/archive/refs/tags/sf_17.1.zip
-sudo apt-get install unzip
-unzip sf_17.1.zip -d .
-rm sf_17.1.zip
+mkdir -p external/chess-modules
+curl -L https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-ubuntu-x86-64-avx2.tar -o external/chess-modules/stockfish-ubuntu-x86-64-avx2.tar
+mkdir -p external/chess-modules/stockfish
+tar -xvf external/chess-modules/stockfish-ubuntu-x86-64-avx2.tar -C external/chess-modules/stockfish --strip-components=1
+rm external/chess-modules/stockfish-ubuntu-x86-64-avx2.tar
 ```
+
+Probably use an `init.sh` script
+
 ---
 
 # References
-For the Chess tool, we used Stock fish, click here for the full [Source Code](https://github.com/official-stockfish/Stockfish)
+- For the Chess tool, we leveraged [board_to_fen](https://github.com/mcdominik/board_to_fen) and [Stockfish 17.1](https://github.com/official-stockfish/Stockfish)

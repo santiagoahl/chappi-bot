@@ -36,7 +36,8 @@ from tools import (
     handle_text,
     pandas_toolbox,
     handle_json,
-    chess_tool
+    chess_tool,
+    handle_images
 )
 
 # Load credentials
@@ -66,6 +67,7 @@ tools_list = [
     calculator.multiply,
     calculator.divide,
     search.web_search,
+    search.pull_youtube_video,
     code_executor.code_executor,
     transcriber.transcriber,
     post_processing.sort_items_and_format,
@@ -76,6 +78,7 @@ tools_list = [
     chess_tool.grab_board_view,
     chess_tool.extract_fen_position,
     chess_tool.predict_next_best_move, 
+    handle_images.detect_objects,
 ]
 
 # ToolNode(tools=tools_list, name="tools", )
