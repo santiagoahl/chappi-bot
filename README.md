@@ -89,7 +89,7 @@ mkdir -p external/chess-modules/stockfish
 tar -xvf external/chess-modules/stockfish-ubuntu-x86-64-avx2.tar -C external/chess-modules/stockfish --strip-components=1
 rm external/chess-modules/stockfish-ubuntu-x86-64-avx2.tar
 ```
-
+2. Change repo name from chappie to chappi-e
 Probably use an `init.sh` script
 
 ---
