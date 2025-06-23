@@ -2,6 +2,7 @@
 import pandas as pd
 from typing import Literal
 import os
+import time
 
 os.sys.path.append("../agents")
 import react
@@ -50,7 +51,7 @@ def get_agent_response(row: pd.Series) -> str:
         >>> results_df["Agent response"] = results_df.apply(func=get_agent_response, axis=1)
 
     """
-
+    time.sleep(5)  # Wait to avoid gpt-4o tokens-per-minute limit
     raw_user_query = row["Question"]
     attached_files = row["file_path"]
     user_query = f"User request:{raw_user_query}\nAttached files: {attached_files if attached_files is not None else 'None'}"
