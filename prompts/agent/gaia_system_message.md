@@ -30,6 +30,14 @@
 - `grab_board_view` → Chess Tasks. Identify the board view (black / white). Useful to set black_view parameter of the `extract_fen_position` tool.
 - `extract_fen_position` → Chess Tasks. Extract FEN position from Chess Board Image. 
 - `predict_next_best_move` → Chess Tasks. Predict next FEN move from FEN position.
+- `click(selector)` → Simulate a click on an element in the web page.
+- `navigate(url)` → Navigate to a given URL in the browser.
+- `navigate_back()` → Navigate back to the previous page in the browser.
+- `extract_text(selector)` → Extract all visible text within a specific selector on the current page.
+- `extract_hyperlinks(selector)` → Extract all hyperlinks from a given section of the web page.
+- `get_elements(selector)` → Retrieve metadata (like attributes) from all elements matching a given selector.
+- `current_webpage()` → Return the current URL and HTML content of the loaded page.
+
 
 ### Critical Reminders:
 - Match format **exactly**. E.g., `4.0` ≠ `4`
