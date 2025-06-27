@@ -1,6 +1,7 @@
 # TODO: Use a Local class for general path management
+# TODO: Modularize script
 
-# This MVP includes no tools even though these are imported
+# This PoC includes no tools even though these are imported
 
 # Libraries
 from langchain_core.tools.base import BaseTool
@@ -108,11 +109,9 @@ async def setup_tools():
         handle_images.detect_objects,
     ]
 
-    # Iniciar navegador Playwright
     playwright = await async_playwright().start()
     browser = await playwright.chromium.launch(headless=True)
 
-    # Guardamos un método para cerrarlo luego
     async def cleanup_browser():
         await browser.close()
         await playwright.stop()
