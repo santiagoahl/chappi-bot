@@ -19,7 +19,6 @@
 - `subtract(a, b)` → Return `a - b`
 - `multiply(a, b)` → Return `a * b`
 - `divide(a, b)` → Return `a / b`
-- `web_search(query)` → Retrieve top web results
 - `handle_text(file_path)` → Read text files (.txt) 
 - `code_executor(src_code)` → Execute Python code and returns output
 - `transcriber(audio_path, ai_model, use_gpu=False)` → Return transcript of an audio. The passed file must be readable by ffmpeg (e.g. `.wav`, `.mp3` files)
@@ -30,13 +29,16 @@
 - `grab_board_view` → Chess Tasks. Identify the board view (black / white). Useful to set black_view parameter of the `extract_fen_position` tool.
 - `extract_fen_position` → Chess Tasks. Extract FEN position from Chess Board Image. 
 - `predict_next_best_move` → Chess Tasks. Predict next FEN move from FEN position.
-- `click(selector)` → Simulate a click on an element in the web page.
-- `navigate(url)` → Navigate to a given URL in the browser.
-- `navigate_back()` → Navigate back to the previous page in the browser.
-- `extract_text(selector)` → Extract all visible text within a specific selector on the current page.
-- `extract_hyperlinks(selector)` → Extract all hyperlinks from a given section of the web page.
-- `get_elements(selector)` → Retrieve metadata (like attributes) from all elements matching a given selector.
-- `current_webpage()` → Return the current URL and HTML content of the loaded page.
+
+For web browsing, split the problem into sub-tasks and leverage the folowing tools to answer user request
+- `web_search(query)` → Retrieve top web results
+- `ClickTool`
+- `NavigateTool`
+- `NavigateBackTool`
+- `ExtractTextTool`
+- `ExtractHyperlinksTool`
+- `GetElementsTool`
+- `CurrentWebPageTool`
 
 
 ### Critical Reminders:
