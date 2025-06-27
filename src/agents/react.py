@@ -87,8 +87,7 @@ langfuse_callback_handler = CallbackHandler()
 
 
 async def setup_tools():
-    # Load local tools
-    # TODO: define the tools list smarter (e.g. using **)
+    # Cargar herramientas locales
     old_tools = [
         calculator.sum_,
         calculator.subtract,
@@ -109,21 +108,24 @@ async def setup_tools():
         handle_images.detect_objects,
     ]
 
-    # Load web browsing tools
-    # TODO: Study this asyncronous task
-    browser_context_manager = (
-        await async_playwright().start()
-    )  # Q: can I instantiate and then run the method start?
-    async_browser = await browser_context_manager.chromium.launch(headless=True)
-    web_toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=async_browser)
+    # Iniciar navegador Playwright
+    playwright = await async_playwright().start()
+    browser = await playwright.chromium.launch(headless=True)
+
+    # Guardamos un método para cerrarlo luego
+    async def cleanup_browser():
+        await browser.close()
+        await playwright.stop()
+
+    # Herramientas del navegador
+    web_toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=browser)
     web_tools = web_toolkit.get_tools()
 
-    # Merge all tools
     all_tools = old_tools + web_tools
-    return all_tools
+    return all_tools, cleanup_browser
 
 
-tools_list = asyncio.run(setup_tools())
+tools_list, clean_browser = asyncio.run(setup_tools())
 # ToolNode(tools=tools_list, name="tools", )
 model_with_tools = model.bind_tools(tools_list)
 
@@ -319,38 +321,30 @@ async def test_app() -> None:
 
 
 async def run_app(
-    user_query: str = None, print_response: bool = False
+    user_query: str = None,
+    print_response: bool = False,
+    clean_browser_fn=None,
 ) -> Union[str, float, int]:
-    """
-    Call the agent, developing it for GAIA benchmark questions.
-
-    Returns:
-        Union[str, float, int]: AI Answer
-
-    Example:
-        >>> import react  # Ensure to include this module to sys path
-        >>> react.run()
-        >>> Pass your question:
-        >>> Calculate the result of: (12 multiplied by 3) minus (15 divided by 5) plus (8 added to 2)
-        '43.0'
-    """
-
-    query = user_query if user_query else input("Pass your question: ")
-    response = await graph.ainvoke(
-        input={"messages": [HumanMessage(content=query)]},
-        config={
-            "callbacks": [langfuse_callback_handler],
-            "configurable": {"thread_id": "1"},
-        },
-    )
-    ai_answer = response.get("messages", [])[-1].content
-
-    if print_response:
-        print(ai_answer)
-
-    return ai_answer
+    try:
+        query = user_query if user_query else input("Pass your question: ")
+        response = await graph.ainvoke(
+            input={"messages": [HumanMessage(content=query)]},
+            config={
+                "callbacks": [langfuse_callback_handler],
+                "configurable": {"thread_id": "1"},
+            },
+        )
+        ai_answer = response.get("messages", [])[-1].content
+        if print_response:
+            print(ai_answer)
+        return ai_answer
+    finally:
+        if clean_browser_fn:
+            await clean_browser_fn()
 
 
 if __name__ == "__main__":
     if "dev" not in sys.argv:
-        asyncio.run(run_app(print_response=True))
+        asyncio.run(run_app(print_response=True, clean_browser_fn=clean_browser))
+
+
