@@ -5,7 +5,7 @@ from tavily import TavilyClient
 from pytubefix import YouTube
 import subprocess
 
-# Web search 
+# Web search
 from urllib.parse import quote_plus, urlparse, parse_qs, unquote
 import requests
 from bs4 import BeautifulSoup
@@ -15,6 +15,7 @@ dotenv.load_dotenv()
 
 search_engine = TavilyClient(api_key=os.getenv(key="TAVILY_API_KEY"))
 
+# TODO: integrate asyncronism
 @tool
 def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
     """
@@ -36,7 +37,7 @@ def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
         'The Uber you know, reimagined for business. Uber for Business is a platform for managing global rides and meals, and local deliveries, for companies of any size ...'
     """
     module_name = "Web Search Tool"
-    #logging.info(f"[{module_name}] Running web search...")
+    # logging.info(f"[{module_name}] Running web search...")
     query = quote_plus(query)  # format query
     url = (
         f"https://html.duckduckgo.com/html/?q={query}"  # Process user query as http url
@@ -49,7 +50,7 @@ def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
     soup = BeautifulSoup(markup=http_response.text, features="html.parser")
     results_raw = soup.find_all(name="a", class_="result__a", limit=3)
 
-    #logging.info(f"[{module_name}] Web search completed.")
+    # logging.info(f"[{module_name}] Web search completed.")
     if not results_raw:
         return "No results found."
 
@@ -58,14 +59,18 @@ def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
         title = tag.get_text(strip=True)
         raw_href = tag.get("href", "")
         parsed = parse_qs(urlparse(raw_href).query)
-        cleaned_url = unquote(parsed.get("uddg", [""])[0]) if "uddg" in parsed else raw_href
+        cleaned_url = (
+            unquote(parsed.get("uddg", [""])[0]) if "uddg" in parsed else raw_href
+        )
         formatted_results.append(f"{i}. [{title}]({cleaned_url})")
 
     return "\n\n".join(formatted_results)
 
 
 @tool
-def pull_youtube_video(url: str, output_dir: str, get_audio: bool = False, get_video: bool = False) -> Dict:
+def pull_youtube_video(
+    url: str, output_dir: str, get_audio: bool = False, get_video: bool = False
+) -> Dict:
     """
     Import Youtube video and audio to local.
     The output are one of two files: processed_yt_video.mp4 and yt_audio.mp3 saved in output_dir
@@ -93,9 +98,11 @@ def pull_youtube_video(url: str, output_dir: str, get_audio: bool = False, get_v
         {"result": f"Data saved in 'data/temp/yt_audio.mp3' and '../../data/temp/processed_yt_video.mp4'"}
     """
     try:
-        assert not ((get_audio==False) and (get_video==False))
+        assert not ((get_audio == False) and (get_video == False))
     except AssertionError:
-        raise AssertionError("arguments get_audio, get_video cannot be both False. Please set one (or both) of them as True to run this module")
+        raise AssertionError(
+            "arguments get_audio, get_video cannot be both False. Please set one (or both) of them as True to run this module"
+        )
 
     yt = YouTube(url)  # Youtube object that pulls video / audio
     output_message = "Data saved in: "
@@ -146,6 +153,7 @@ def pull_youtube_video(url: str, output_dir: str, get_audio: bool = False, get_v
 
     return {"result": output_message}
 
+
 def test_web_search():
     user_query = input("Pass a topic / word to search for: ")
     search_result = web_search.invoke(input=user_query, max_results=2)
@@ -153,16 +161,20 @@ def test_web_search():
     print("=" * 40)
     print(search_result)
 
+
 def test_yt_func():
     # fast unit testing
     yt_url = input("Pass YT url: ")
     output_dir = input("Pass output dir: ")
-    result = pull_youtube_video.invoke(input={"url": yt_url, "output_dir": output_dir, "get_video": True})
+    result = pull_youtube_video.invoke(
+        input={"url": yt_url, "output_dir": output_dir, "get_video": True}
+    )
     print("result", result)
+
 
 if __name__ == "__main__":
     test_web_search()
-    #test_yt_func()
+    # test_yt_func()
 
 # TODO: chage module name to search.py
 # TODO: pass Path in docstrings for better typing
