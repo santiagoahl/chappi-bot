@@ -5,36 +5,63 @@ from tavily import TavilyClient
 from pytubefix import YouTube
 import subprocess
 
+# Web search 
+from urllib.parse import quote_plus, urlparse, parse_qs, unquote
+import requests
+from bs4 import BeautifulSoup
+
 
 dotenv.load_dotenv()
 
 search_engine = TavilyClient(api_key=os.getenv(key="TAVILY_API_KEY"))
 
 @tool
-def web_search(query: str, max_results: int = 4) -> str:
+def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
     """
-    Run a web search to find information in the internet.
+    This tools searchs in the web to retrieve information related to the user query.
 
     Parameters
     ----------
     query : str
-        Question to find out about
-    max_results: int
-        Top search results allowed
+        Web search query
 
     Returns:
-        str: First results of the search result
+        str: Web search result
 
     Example:
-        >>> web_search('Who is Luis Diaz')  # TODO: format this docstring
-        'Luis Fernando Díaz Marulanda (born 13 January 1997) is a Colombian professional footballer who plays as a left winger or forward for Premier League club Liverpool and the Colombia national team.'
+        >>> search_tool.invoke(state={
+            "gala_state": gala_state,
+            "chat_history": {"user": "What is Uber"}
+        })
+        'The Uber you know, reimagined for business. Uber for Business is a platform for managing global rides and meals, and local deliveries, for companies of any size ...'
     """
-
-    search_result_raw = search_engine.search(
-        query, search_depth="advanced", max_results=max_results, include_answer=True
+    module_name = "Web Search Tool"
+    #logging.info(f"[{module_name}] Running web search...")
+    query = quote_plus(query)  # format query
+    url = (
+        f"https://html.duckduckgo.com/html/?q={query}"  # Process user query as http url
     )
-    search_result = search_result_raw.get("answer", "No answers found.")
-    return search_result
+    headers = {"User-Agent": "Mozilla/5.0"}
+
+    http_query = {"url": url, "headers": headers}
+
+    http_response = requests.get(**http_query)
+    soup = BeautifulSoup(markup=http_response.text, features="html.parser")
+    results_raw = soup.find_all(name="a", class_="result__a", limit=3)
+
+    #logging.info(f"[{module_name}] Web search completed.")
+    if not results_raw:
+        return "No results found."
+
+    formatted_results = []
+    for i, tag in enumerate(results_raw, start=1):
+        title = tag.get_text(strip=True)
+        raw_href = tag.get("href", "")
+        parsed = parse_qs(urlparse(raw_href).query)
+        cleaned_url = unquote(parsed.get("uddg", [""])[0]) if "uddg" in parsed else raw_href
+        formatted_results.append(f"{i}. [{title}]({cleaned_url})")
+
+    return "\n\n".join(formatted_results)
 
 
 @tool
@@ -134,7 +161,8 @@ def test_yt_func():
     print("result", result)
 
 if __name__ == "__main__":
-    test_yt_func()
+    test_web_search()
+    #test_yt_func()
 
 # TODO: chage module name to search.py
 # TODO: pass Path in docstrings for better typing
