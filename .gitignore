@@ -13,10 +13,31 @@ venv/
 .coverage
 .hypothesis/
 .mypy_cache/
-./data/temp-data/
-./external/chess-modules/
-./notebooks/tools_poc/data/temp-data/
 
-# Playwright browser binaries
+data/temp/
+data/temp-data/
+data/temp/*.mp4
+data/temp/*.mp3
+data/temp/*.wav
+
+external/ai-models/
+external/chess-modules/stockfish/
+external/chess-modules/board_to_fen/saved_models/
+
+notebooks/tools_poc/data/temp/
+notebooks/tools_poc/*.pt
+
+*.pt
+*.h5
+*.ckpt
+*.onnx
+*.tflite
+*.pb
+*.sav
+*.pkl
+*.npy
+*.npz
+*.joblib
+
 ms-playwright/
 .playwright/
