@@ -4,20 +4,29 @@ from langchain.tools import tool
 from tavily import TavilyClient
 from pytubefix import YouTube
 import subprocess
+from playwright.async_api import async_playwright
+import pdfplumber
+import io
 
 # Web search
 from urllib.parse import quote_plus, urlparse, parse_qs, unquote
-import requests
+
+import aiohttp #import aiohttp
 from bs4 import BeautifulSoup
+from markdownify import markdownify
+import asyncio
+
+# Document mining
+from langchain_community.document_loaders import OnlinePDFLoader
 
 
 dotenv.load_dotenv()
 
-search_engine = TavilyClient(api_key=os.getenv(key="TAVILY_API_KEY"))
+# search_engine = TavilyClient(api_key=os.getenv(key="TAVILY_API_KEY"))
 
-# TODO: integrate asyncronism
+# TODO: update docstrings
 @tool
-def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
+async def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
     """
     This tools searchs in the web to retrieve information related to the user query.
 
@@ -27,7 +36,7 @@ def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
         Web search query
 
     Returns:
-        str: Web search result
+        str: Web search result with related links
 
     Example:
         >>> search_tool.invoke(state={
@@ -39,15 +48,21 @@ def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
     module_name = "Web Search Tool"
     # logging.info(f"[{module_name}] Running web search...")
     query = quote_plus(query)  # format query
+    # Get page data 
     url = (
         f"https://html.duckduckgo.com/html/?q={query}"  # Process user query as http url
     )
+
     headers = {"User-Agent": "Mozilla/5.0"}
-
     http_query = {"url": url, "headers": headers}
+    
+    async with aiohttp.ClientSession() as http_session:
+        async with http_session.get(**http_query) as response:
+            http_response = await response.text()
 
-    http_response = requests.get(**http_query)
-    soup = BeautifulSoup(markup=http_response.text, features="html.parser")
+    soup = await asyncio.to_thread(
+        BeautifulSoup, markup=http_response, features="html.parser"
+    )
     results_raw = soup.find_all(name="a", class_="result__a", limit=3)
 
     # logging.info(f"[{module_name}] Web search completed.")
@@ -65,6 +80,23 @@ def web_search(query: str) -> str:  # Q: how to pass GuestState as type?
         formatted_results.append(f"{i}. [{title}]({cleaned_url})")
 
     return "\n\n".join(formatted_results)
+
+
+@tool
+async def fetch_online_pdf(pdf_url: str) -> str:
+    """
+    Extract text from a PDF file saved in the web
+    
+    Args:
+        url (str): URL that points directly to the pdf file
+
+    Returns:
+        str: PDF text
+    """
+    pdf_object = OnlinePDFLoader(file_path=pdf_url)
+    pdf = await pdf_object.load()
+
+    return pdf
 
 
 @tool
@@ -99,7 +131,7 @@ def pull_youtube_video(
     """
     try:
         assert not ((get_audio == False) and (get_video == False))
-    except AssertionError:
+    except AssertionError: 
         raise AssertionError(
             "arguments get_audio, get_video cannot be both False. Please set one (or both) of them as True to run this module"
         )
@@ -171,9 +203,20 @@ def test_yt_func():
     )
     print("result", result)
 
+def test_fetch_pdf() -> None:
+    user_query = input("Pass a pdf in the web to extract: ")
+
+    async def inner():
+        result = await fetch_pdf_text.ainvoke(input=user_query)
+        print("Results")
+        print("=" * 40)
+        print(result)
+
+    asyncio.run(inner())
 
 if __name__ == "__main__":
-    test_web_search()
+    test_fetch_pdf()
+    #test_web_search()
     # test_yt_func()
 
 # TODO: chage module name to search.py
