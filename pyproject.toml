@@ -54,7 +54,7 @@ unstructured-inference = "^1.0.5"
 pi-heif = "^0.22.0"
 pdfminer-six = "^20250506"
 unstructured = "^0.18.1"
-gradio = "5.35.0"
+gradio = {extras = ["oauth"], version = "^5.35.0"}
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
