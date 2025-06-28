@@ -1,11 +1,10 @@
-# **🤖 Chappi-e**
+# **🤖 Chappie**
 
-Chappi-e is a lightweight AI assistant agent built using the ********React architecture******** with [__LangGraph__](__https://docs.langgraph.dev/__). It is designed to reason, plan, and execute actions using tools in a flexible and modular workflow.
+Chappie is a lightweight AI assistant agent built using the ********React architecture******** with [__LangGraph__](__https://docs.langgraph.dev/__). It is designed to reason, plan, and execute actions using tools in a flexible and modular workflow.
 
 ---
 
-
-https://github.com/user-attachments/assets/8b1c4ffb-f1c3-426d-9ac7-77a81d04d991
+![Captura de pantalla 2025-05-16 005150](__https://github.com/user-attachments/assets/20c96271-6f72-477a-80b6-89fa72008714__)
 
 
 ## **🛠️ Setup**
