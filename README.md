@@ -1,3 +1,14 @@
+---
+title: Chappie
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: "4.16.0"
+app_file: app.py
+pinned: false
+---
+
 # **🤖 Chappi-e**
 
 Chappi-e is a lightweight AI assistant agent built using the ********React architecture******** with [__LangGraph__](__https://docs.langgraph.dev/__). It is designed to reason, plan, and execute actions using tools in a flexible and modular workflow.
