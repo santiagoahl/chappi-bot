@@ -32,6 +32,7 @@
 
 For web browsing, split the problem into sub-tasks and leverage the folowing tools to answer user request
 - `web_search(query)` → Retrieve top web results
+- `fetch_online_pdf` → Use in case you need to access online PDF files, such as papers  
 - `ClickTool`
 - `NavigateTool`
 - `NavigateBackTool`
