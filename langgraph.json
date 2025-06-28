@@ -1,6 +1,10 @@
 {
   "dependencies": ["./"],
   "graphs": {
+<<<<<<< HEAD
     "mvp_agent": "src/agents/react.py:graph"
+=======
+    "mvp_agent": "src/agents/react/mvp_agent.py:graph"
+>>>>>>> f9e9330 (bugfix: Debugged TOol observations)
   }
 }

@@ -5,6 +5,7 @@ description = "An AI assistant ready to make your life easier"
 authors = ["santiagoal <santiago.ahumada.1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+<<<<<<< HEAD
 packages = [
     { include = "tools", from = "src" },
     { include = "agents", from = "src" }
@@ -14,6 +15,12 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "3.11.13"
 langchain = "0.3.25"
+=======
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+langchain = ">=0.3.25,<0.4.0"
+>>>>>>> f9e9330 (bugfix: Debugged TOol observations)
 langchain-openai = ">=0.3.16,<0.4.0"
 langchain-core = ">=0.3.59,<0.4.0"
 langchain-community = ">=0.3.24,<0.4.0"
@@ -21,6 +28,7 @@ langgraph = ">=0.4.3,<0.5.0"
 langgraph-prebuilt = ">=0.1.8,<0.2.0"
 python-dotenv = ">=1.1.0,<2.0.0"
 black = ">=25.1.0,<26.0.0"
+<<<<<<< HEAD
 langfuse = "^2.60.4"
 langgraph-cli = {extras = ["inmem"], version = "^0.2.10"}
 tavily-python = "^0.7.2"
@@ -58,6 +66,11 @@ unstructured = "^0.18.1"
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
 numba = ">=0.58"
+=======
+pyppeteer = "^2.0.0"
+langfuse = "^2.60.4"
+langgraph-cli = {extras = ["inmem"], version = "^0.2.10"}
+>>>>>>> f9e9330 (bugfix: Debugged TOol observations)
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
