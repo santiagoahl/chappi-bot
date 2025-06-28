@@ -32,7 +32,7 @@ class ReactAgent:
     def __call__(self, question: str) -> str:
         print(f"Agent received question (first 50 chars): {question[:50]}...")
         agent_response = asyncio.run(
-           react.run_agent(user_query=question)
+            react.run_agent(user_query=question)
         )
         print(f"Agent returning fixed answer: {agent_response}")
         return agent_response
