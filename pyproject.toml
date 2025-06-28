@@ -55,6 +55,8 @@ pi-heif = "^0.22.0"
 pdfminer-six = "^20250506"
 unstructured = "^0.18.1"
 gradio = {extras = ["oauth"], version = "^5.35.0"}
+openai = "^1.93.0"
+logging = "^0.4.9.6"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

@@ -5,7 +5,16 @@ import inspect
 import pandas as pd
 import sys
 import asyncio
+import time
+import openai
+from openai.error import RateLimitError
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S"
+)
 
 # Add local files
 SRC_DIR = "src/"
@@ -28,14 +37,26 @@ DEFAULT_API_URL = "https://agents-course-unit4-scoring.hf.space"
 # ----- THIS IS WERE YOU CAN BUILD WHAT YOU WANT ------
 class ReactAgent:
     def __init__(self):
-        print("ReactAgent initialized.")
+        self._max_retries = 3
+        logging.info("ReactAgent initialized.")
+
     def __call__(self, question: str) -> str:
-        print(f"Agent received question (first 50 chars): {question[:50]}...")
-        agent_response = asyncio.run(
-            react.run_agent(user_query=question)
-        )
-        print(f"Agent returning fixed answer: {agent_response}")
-        return agent_response
+        logging.info(f"Agent received question (first 50 chars): {question[:50]}...")
+        
+        for attempt in range(self._max_retries):
+            try:
+                agent_response = asyncio.run(
+                    react.run_agent(user_query=question)
+                )
+                logging.info(f"Agent returning fixed answer: {agent_response}")
+                return agent_response
+            except RateLimitError as e:
+                wait_time = 2 ** attempt
+                time.sleep(wait_time)
+                logging.info(f"[RateLimitError] Attempt {attempt+1}/{self._max_retries} - Sleeping {wait_time}s...")
+                raise e
+        return "Agent testing phase not successful."
+
 
 def run_and_submit_all( profile: gr.OAuthProfile | None):
     """
@@ -47,9 +68,9 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
 
     if profile:
         username= f"{profile.username}"
-        print(f"User logged in: {username}")
+        logging.info(f"User logged in: {username}")
     else:
-        print("User not logged in.")
+        logging.info("User not logged in.")
         return "Please Login to Hugging Face with the button.", None
 
     api_url = DEFAULT_API_URL
@@ -60,62 +81,62 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     try:
         agent = ReactAgent()
     except Exception as e:
-        print(f"Error instantiating agent: {e}")
+        logging.info(f"Error instantiating agent: {e}")
         return f"Error initializing agent: {e}", None
     # In the case of an app running as a hugging Face space, this link points toward your codebase ( usefull for others so please keep it public)
     agent_code = f"https://huggingface.co/spaces/{space_id}/tree/main"
-    print(agent_code)
+    logging.info(agent_code)
 
     # 2. Fetch Questions
-    print(f"Fetching questions from: {questions_url}")
+    logging.info(f"Fetching questions from: {questions_url}")
     try:
         response = requests.get(questions_url, timeout=15)
         response.raise_for_status()
         questions_data = response.json()
         if not questions_data:
-             print("Fetched questions list is empty.")
+             logging.info("Fetched questions list is empty.")
              return "Fetched questions list is empty or invalid format.", None
-        print(f"Fetched {len(questions_data)} questions.")
+        logging.info(f"Fetched {len(questions_data)} questions.")
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching questions: {e}")
+        logging.info(f"Error fetching questions: {e}")
         return f"Error fetching questions: {e}", None
     except requests.exceptions.JSONDecodeError as e:
-         print(f"Error decoding JSON response from questions endpoint: {e}")
-         print(f"Response text: {response.text[:500]}")
+         logging.info(f"Error decoding JSON response from questions endpoint: {e}")
+         logging.info(f"Response text: {response.text[:500]}")
          return f"Error decoding server response for questions: {e}", None
     except Exception as e:
-        print(f"An unexpected error occurred fetching questions: {e}")
+        logging.info(f"An unexpected error occurred fetching questions: {e}")
         return f"An unexpected error occurred fetching questions: {e}", None
 
     # 3. Run your Agent
     results_log = []
     answers_payload = []
-    print(f"Running agent on {len(questions_data)} questions...")
+    logging.info(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
         task_id = item.get("task_id")
         question_text = item.get("question")
         if not task_id or question_text is None:
-            print(f"Skipping item with missing task_id or question: {item}")
+            logging.info(f"Skipping item with missing task_id or question: {item}")
             continue
         try:
             submitted_answer = agent(question_text)
             answers_payload.append({"task_id": task_id, "submitted_answer": submitted_answer})
             results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": submitted_answer})
         except Exception as e:
-             print(f"Error running agent on task {task_id}: {e}")
+             logging.info(f"Error running agent on task {task_id}: {e}")
              results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": f"AGENT ERROR: {e}"})
 
     if not answers_payload:
-        print("Agent did not produce any answers to submit.")
+        logging.info("Agent did not produce any answers to submit.")
         return "Agent did not produce any answers to submit.", pd.DataFrame(results_log)
 
     # 4. Prepare Submission 
     submission_data = {"username": username.strip(), "agent_code": agent_code, "answers": answers_payload}
     status_update = f"Agent finished. Submitting {len(answers_payload)} answers for user '{username}'..."
-    print(status_update)
+    logging.info(status_update)
 
     # 5. Submit
-    print(f"Submitting {len(answers_payload)} answers to: {submit_url}")
+    logging.info(f"Submitting {len(answers_payload)} answers to: {submit_url}")
     try:
         response = requests.post(submit_url, json=submission_data, timeout=60)
         response.raise_for_status()
@@ -127,7 +148,7 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
             f"({result_data.get('correct_count', '?')}/{result_data.get('total_attempted', '?')} correct)\n"
             f"Message: {result_data.get('message', 'No message received.')}"
         )
-        print("Submission successful.")
+        logging.info("Submission successful.")
         results_df = pd.DataFrame(results_log)
         return final_status, results_df
     except requests.exceptions.HTTPError as e:
@@ -138,22 +159,22 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
         except requests.exceptions.JSONDecodeError:
             error_detail += f" Response: {e.response.text[:500]}"
         status_message = f"Submission Failed: {error_detail}"
-        print(status_message)
+        logging.info(status_message)
         results_df = pd.DataFrame(results_log)
         return status_message, results_df
     except requests.exceptions.Timeout:
         status_message = "Submission Failed: The request timed out."
-        print(status_message)
+        logging.info(status_message)
         results_df = pd.DataFrame(results_log)
         return status_message, results_df
     except requests.exceptions.RequestException as e:
         status_message = f"Submission Failed: Network error - {e}"
-        print(status_message)
+        logging.info(status_message)
         results_df = pd.DataFrame(results_log)
         return status_message, results_df
     except Exception as e:
         status_message = f"An unexpected error occurred during submission: {e}"
-        print(status_message)
+        logging.info(status_message)
         results_df = pd.DataFrame(results_log)
         return status_message, results_df
 
@@ -190,25 +211,25 @@ with gr.Blocks() as demo:
     )
 
 if __name__ == "__main__":
-    print("\n" + "-"*30 + " App Starting " + "-"*30)
+    logging.info("\n" + "-"*30 + " App Starting " + "-"*30)
     # Check for SPACE_HOST and SPACE_ID at startup for information
     space_host_startup = os.getenv("SPACE_HOST")
     space_id_startup = os.getenv("SPACE_ID") # Get SPACE_ID at startup
 
     if space_host_startup:
-        print(f"✅ SPACE_HOST found: {space_host_startup}")
-        print(f"   Runtime URL should be: https://{space_host_startup}.hf.space")
+        logging.info(f"✅ SPACE_HOST found: {space_host_startup}")
+        logging.info(f"   Runtime URL should be: https://{space_host_startup}.hf.space")
     else:
-        print("ℹ️  SPACE_HOST environment variable not found (running locally?).")
+        logging.info("ℹ️  SPACE_HOST environment variable not found (running locally?).")
 
-    if space_id_startup: # Print repo URLs if SPACE_ID is found
-        print(f"✅ SPACE_ID found: {space_id_startup}")
-        print(f"   Repo URL: https://huggingface.co/spaces/{space_id_startup}")
-        print(f"   Repo Tree URL: https://huggingface.co/spaces/{space_id_startup}/tree/main")
+    if space_id_startup: # logging.info repo URLs if SPACE_ID is found
+        logging.info(f"✅ SPACE_ID found: {space_id_startup}")
+        logging.info(f"   Repo URL: https://huggingface.co/spaces/{space_id_startup}")
+        logging.info(f"   Repo Tree URL: https://huggingface.co/spaces/{space_id_startup}/tree/main")
     else:
-        print("ℹ️  SPACE_ID environment variable not found (running locally?). Repo URL cannot be determined.")
+        logging.info("ℹ️  SPACE_ID environment variable not found (running locally?). Repo URL cannot be determined.")
 
-    print("-"*(60 + len(" App Starting ")) + "\n")
+    logging.info("-"*(60 + len(" App Starting ")) + "\n")
 
-    print("Launching Gradio Interface for Basic Agent Evaluation...")
+    logging.info("Launching Gradio Interface for Basic Agent Evaluation...")
     demo.launch(debug=True, share=False)

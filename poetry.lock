@@ -2787,6 +2787,16 @@ files = [
 ]
 
 [[package]]
+name = "logging"
+version = "0.4.9.6"
+description = "A logging module for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "logging-0.4.9.6.tar.gz", hash = "sha256:26f6b50773f085042d301085bd1bf5d9f3735704db9f37c1ce6d8b85c38f2417"},
+]
+
+[[package]]
 name = "lxml"
 version = "6.0.0"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -7993,4 +8003,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.13"
-content-hash = "9cce0cdbe3d5a5cff6a834f55d9e9135fe766ed8b3f937d11c1164beb30a9e73"
+content-hash = "cbebad379370679d925ec15baba161ba5743f15a0210c0f8c3f963fa30eb7f67"
