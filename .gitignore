@@ -20,7 +20,7 @@ data/temp/*.mp4
 data/temp/*.mp3
 data/temp/*.wav
 
-external/ai-models/
+#external/ai-models/
 external/chess-modules/stockfish/
 external/chess-modules/board_to_fen/saved_models/
 
