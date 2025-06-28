@@ -10,7 +10,7 @@ def transcriber(audio_path: str, use_gpu: bool = False) -> str:
     Parameters
     ----------
     audio_path : str or Path
-        Path to an existing audio file (e.g., .wav, .mp3). Must be readable by ffmpeg.
+        Path to an existing audio file (e.g. .wav, .mp3). Must be readable by ffmpeg.
     use_gpu: bool
         Pass True if you are in a colab GPU environment or you have an integrated Nvidia GPU
     
@@ -38,6 +38,10 @@ def transcriber(audio_path: str, use_gpu: bool = False) -> str:
     return transcript
 
 if __name__ == "__main__":
-    audio_path = "~/.cache/huggingface/hub/datasets--gaia-benchmark--GAIA/snapshots/897f2dfbb5c952b5c3c1509e648381f9c7b70316/2023/validation/99c9cc74-fdc8-46c6-8f8d-3ce2d3bfeea3.mp3"#input("Pass your audio path to transcribe: ")
-    audio_path = os.path.expanduser(audio_path)
-    print("=" * 30, "Transcription\n", "=" * 30, "\n", transcriber(audio_path))
+    #audio_path = "~/.cache/huggingface/hub/datasets--gaia-benchmark--GAIA/snapshots/897f2dfbb5c952b5c3c1509e648381f9c7b70316/2023/validation/99c9cc74-fdc8-46c6-8f8d-3ce2d3bfeea3.mp3"#input("Pass your audio path to transcribe: ")
+    #audio_path = os.path.expanduser(audio_path)
+    audio_path = "data/temp/yt_audio.mp3"
+    print("=" * 30, "\nTranscription\n", "=" * 30, "\n", transcriber(audio_path))
+
+
+# TODO: include unit testing modules

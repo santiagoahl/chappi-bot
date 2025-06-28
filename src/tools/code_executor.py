@@ -1,9 +1,9 @@
-from typing import LiteralString
+from typing import Literal
 from langchain.tools import tool
 import subprocess
 
 
-def read_multiline_code() -> LiteralString:
+def read_multiline_code() -> Literal:
     print("Write your python code. End input with an empty line.")
     lines = []
     while True:
