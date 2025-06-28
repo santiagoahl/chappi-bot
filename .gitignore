@@ -38,6 +38,7 @@ notebooks/tools_poc/*.pt
 *.npy
 *.npz
 *.joblib
+*.png
 
 ms-playwright/
 .playwright/
