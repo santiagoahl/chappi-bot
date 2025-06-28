@@ -27,7 +27,7 @@ external/chess-modules/board_to_fen/saved_models/
 notebooks/tools_poc/data/temp/
 notebooks/tools_poc/*.pt
 
-#*.pt  # Preserve pytorch models
+#*.pt  # Preserve pytorch models. Is there a more optimal way to load this model?
 *.h5
 *.ckpt
 *.onnx
