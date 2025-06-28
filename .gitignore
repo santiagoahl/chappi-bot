@@ -27,7 +27,7 @@ external/chess-modules/board_to_fen/saved_models/
 notebooks/tools_poc/data/temp/
 notebooks/tools_poc/*.pt
 
-*.pt
+#*.pt  # Preserve pytorch models
 *.h5
 *.ckpt
 *.onnx
