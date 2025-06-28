@@ -15,6 +15,7 @@ venv/
 .mypy_cache/
 ./data/temp-data/
 ./external/chess-modules/
+./notebooks/tools_poc/data/temp-data/
 
 # Playwright browser binaries
 ms-playwright/

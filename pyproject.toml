@@ -5,6 +5,10 @@ description = "An AI assistant ready to make your life easier"
 authors = ["santiagoal <santiago.ahumada.1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "tools", from = "src" },
+    { include = "agents", from = "src" }
+]
 package-mode = false
 
 [tool.poetry.dependencies]
@@ -43,6 +47,13 @@ ultralytics = "^8.3.158"
 playwright = "^1.53.0"
 beautifulsoup4 = "^4.13.4"
 aiofiles = "^24.1.0"
+pdfplumber = "^0.11.7"
+markdownify = "^1.1.0"
+pdf2image = "^1.17.0"
+unstructured-inference = "^1.0.5"
+pi-heif = "^0.22.0"
+pdfminer-six = "^20250506"
+unstructured = "^0.18.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
