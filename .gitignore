@@ -13,6 +13,7 @@ venv/
 .coverage
 .hypothesis/
 .mypy_cache/
+<<<<<<< HEAD
 
 data/temp/
 data/temp-data/
@@ -41,3 +42,6 @@ notebooks/tools_poc/*.pt
 
 ms-playwright/
 .playwright/
+=======
+./data/temp-data/
+>>>>>>> 8eb8748 (POC for audio-to-text tool, using OpenAI Whisper)
