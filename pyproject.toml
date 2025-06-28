@@ -30,6 +30,7 @@ ffmpeg = "^1.4"
 llvmlite = ">=0.40"
 pandas = "^2.3.0"
 datasets = "^3.6.0"
+<<<<<<< HEAD
 numpy = ">=1.26.0,<2.2.0"
 opencv-python = "^4.11.0.86"
 pyarrow = "^20.0.0"
@@ -54,6 +55,9 @@ unstructured-inference = "^1.0.5"
 pi-heif = "^0.22.0"
 pdfminer-six = "^20250506"
 unstructured = "^0.18.1"
+=======
+tavily-python = "^0.7.2"
+>>>>>>> 1d14d45 (feat: Web Search Tool MVP)
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
