@@ -33,6 +33,33 @@ from langchain_community.agent_toolkits.playwright.toolkit import (
 )
 import asyncio
 
+tools_list = []
+clean_browser = None
+tools_by_name = {}
+model_with_tools = None
+_tools_initialized = False
+_tools_lock = asyncio.Lock()
+
+async def initialize_tools():
+    global tools_list, clean_browser, tools_by_name, model_with_tools, _tools_initialized
+
+    async with _tools_lock:  # Esto se libera automáticamente
+        if _tools_initialized:
+            print("Tools already initialized")
+            return
+
+        print("Initializing tools")
+        try:
+            await import_local_modules()
+            tools_list, clean_browser = await setup_tools()
+            tools_by_name = {tool.name: tool for tool in tools_list}
+            model_with_tools = model.bind_tools(tools_list)
+            _tools_initialized = True
+            print("Initialized tools")
+        except Exception as e: 
+            print(f"Error when initializing tools: {e}")
+            raise 
+ 
 
 async def import_local_modules() -> None:
     src_path = await asyncio.to_thread(lambda: os.path.abspath("src"))
@@ -41,7 +68,10 @@ async def import_local_modules() -> None:
     sys.path.append(tools_path)
 
 
-asyncio.run(import_local_modules())
+#asyncio.run(import_local_modules())  # DEPRECATED
+
+sys.path.append(os.path.abspath("src"))
+sys.path.append(os.path.abspath("src/tools"))
 
 from tools import (
     calculator,
@@ -62,7 +92,7 @@ from tools import (
 MAX_ITERATIONS = 7
 ROOT_DIR = "/home/santiagoal/current-projects/chappie/"
 AGENT_PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts/agent/")
-SYS_MSG_PATH = os.path.join(AGENT_PROMPTS_DIR, "gaia_system_message.md")
+#SYS_MSG_PATH = os.path.join(AGENT_PROMPTS_DIR, "gaia_system_message.md")
 
 load_dotenv()
 
@@ -78,15 +108,13 @@ async def set_sys_msg(prompt_path: str):
     return sys_msg
 
 
-SYSTEM_MESSAGE = asyncio.run(set_sys_msg(prompt_path=SYS_MSG_PATH))
+#SYSTEM_MESSAGE = asyncio.run(set_sys_msg(prompt_path=SYS_MSG_PATH))
 
 model = ChatOpenAI(model="gpt-4o", temperature=0.5)
 langfuse_callback_handler = CallbackHandler()
 
 
 # Define tools to use
-
-
 async def setup_tools():
     # Cargar herramientas locales
     old_tools = [
@@ -96,6 +124,7 @@ async def setup_tools():
         calculator.divide,
         search.web_search,
         search.pull_youtube_video,
+        #search.fetch_online_pdf,
         code_executor.code_executor,
         transcriber.transcriber,
         post_processing.sort_items_and_format,
@@ -119,14 +148,20 @@ async def setup_tools():
     # Herramientas del navegador
     web_toolkit = PlayWrightBrowserToolkit.from_browser(async_browser=browser)
     web_tools = web_toolkit.get_tools()
+    # Optional: ajusta el timeout predeterminado de las tools Playwright
+    for tool in web_tools:
+        if hasattr(tool, "timeout"):
+            tool.timeout = 60000 
+
 
     all_tools = old_tools + web_tools
     return all_tools, cleanup_browser
 
 
-tools_list, clean_browser = asyncio.run(setup_tools())
+
+# tools_list, clean_browser = asyncio.run(setup_tools())  # DEPRECATED
 # ToolNode(tools=tools_list, name="tools", )
-model_with_tools = model.bind_tools(tools_list)
+#model_with_tools = model.bind_tools(tools_list)  # DEPRECATED
 
 
 # State
@@ -136,18 +171,25 @@ class TaskState(TypedDict):
 
 
 # tools_by_name = {tool.name: tool for tool in tools}
-tools_by_name = {tool.name: tool for tool in tools_list}  # Q: Does it work?
+# tools_by_name = {tool.name: tool for tool in tools_list}  # Q: Does it work? # DEPRECATED
 
 
 # Nodes
-def prepare_agent(state: TaskState) -> dict[str, list]:
-    "Agent Start Node, responsible to define Agent behavior"
-    messages = state.get("messages", [])
+async def prepare_agent(state: TaskState) -> dict[str, list]:
+    try:
+        await initialize_tools()
+    except Exception as e:
+        print(f"Error initializing tools: {e}")
+        raise
 
+    messages = state.get("messages", [])
     if not any(isinstance(m, SystemMessage) for m in messages):
-        messages.insert(0, SystemMessage(content=SYSTEM_MESSAGE))
+        sys_msg_path = os.path.join(AGENT_PROMPTS_DIR, "gaia_system_message.md")
+        sys_msg = await set_sys_msg(prompt_path=sys_msg_path)
+        messages.insert(0, SystemMessage(content=sys_msg))
 
     return {"messages": messages, "iteration": 0}
+
 
 
 async def tools_node(state: TaskState) -> dict[str, list]:
@@ -345,5 +387,3 @@ async def run_app(
 if __name__ == "__main__":
     if "dev" not in sys.argv:
         asyncio.run(run_app(print_response=True, clean_browser_fn=clean_browser))
-
-
