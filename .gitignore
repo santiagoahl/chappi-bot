@@ -23,7 +23,7 @@ data/temp/*.wav
 #external/ai-models/
 external/chess-modules/stockfish/
 external/chess-modules/board_to_fen/saved_models/
-
+eval-files/
 notebooks/tools_poc/data/temp/
 #notebooks/tools_poc/*.pt
 

@@ -1,6 +1,8 @@
 import os
 import gradio as gr
 import requests
+from bs4 import BeautifulSoup
+import json
 import inspect
 import pandas as pd
 import sys
@@ -38,7 +40,27 @@ DEFAULT_API_URL = "https://agents-course-unit4-scoring.hf.space"
 class ReactAgent:
     def __init__(self):
         self._max_retries = 3
+        self.eval_dir = "eval-files/"
+        self.api_url = DEFAULT_API_URL
+        self.files_api_url = self.api_url + "/files"
+
+        self.questions_api_url = self.api_url + "/questions"
+        questions_response = requests.get(self.questions_api_url, timeout=15)
+        questions_soup = BeautifulSoup(markup=questions_response.text, features="html.parser")
+        self.questions_raw = json.loads(questions_soup.text.strip())
+        self.questions_index = pd.DataFrame(self.questions_raw)
+
+        os.makedirs(self.eval_dir, exist_ok=True)  # Create dir to save task files
         logging.info("ReactAgent initialized.")
+
+    def save_file(self, task_id):
+        file_api_url = self.files_api_url + f"/{task_id}"
+        filename = self.questions_index[self.questions_index["task_id"] == task_id]["file_name"].iloc[0]
+        file_path = self.eval_dir + filename
+        response = requests.get(file_api_url, timeout=15)
+        if response.status_code == 200:
+            with open(filename, "wb") as f:
+                f.write(response.content)
 
     def __call__(self, question: str) -> str:
         logging.info(f"Agent received question (first 50 chars): {question[:50]}...")
@@ -115,11 +137,16 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     for item in questions_data:
         task_id = item.get("task_id")
         question_text = item.get("question")
+        filename = agent.questions_index[agent.questions_index["task_id"] == task_id]["file_name"].iloc[0]
+        file_path = agent.eval_dir + filename
+
+        agent.save_file(task_id)
+        question_processed = f"Question: {question_text}\nAttached Files: {file_path}"
         if not task_id or question_text is None:
             logging.info(f"Skipping item with missing task_id or question: {item}")
             continue
         try:
-            submitted_answer = agent(question_text)
+            submitted_answer = agent(question_processed)
             answers_payload.append({"task_id": task_id, "submitted_answer": submitted_answer})
             results_log.append({"Task ID": task_id, "Question": question_text, "Submitted Answer": submitted_answer})
         except Exception as e:
