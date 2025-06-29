@@ -7,7 +7,7 @@ import sys
 import asyncio
 import time
 import openai
-from openai.error import RateLimitError
+from openai import RateLimitError
 import logging
 
 logging.basicConfig(
@@ -181,21 +181,29 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
 
 # --- Build Gradio Interface using Blocks ---
 with gr.Blocks() as demo:
-    gr.Markdown("# Basic Agent Evaluation Runner")
+    gr.Markdown("# 🤖 Chappie: Intelligent Agent Evaluation")
     gr.Markdown(
         """
-        **Instructions:**
-
-        1.  Please clone this space, then modify the code to define your agent's logic, the tools, the necessary packages, etc ...
-        2.  Log in to your Hugging Face account using the button below. This uses your HF username for submission.
-        3.  Click 'Run Evaluation & Submit All Answers' to fetch questions, run your agent, submit answers, and see the score.
+        Welcome to **Chappie**, your intelligent assistant powered by LangGraph and LangChain!
 
         ---
-        **Disclaimers:**
-        Once clicking on the "submit button, it can take quite some time ( this is the time for the agent to go through all the questions).
-        This space provides a basic setup and is intentionally sub-optimal to encourage you to develop your own, more robust solution. For instance for the delay process of the submit button, a solution could be to cache the answers and submit in a seperate action or even to answer the questions in async.
+        ### 📋 Instructions:
+
+        1. Make sure your environment includes all required packages and tools (like Playwright, LangChain, etc.).
+        2. Enter your question in the input box below.
+        3. Chappie will analyze your input and use tools if needed to generate the most accurate response.
+
+        ---
+        ### ⚠️ Notes:
+        - Some answers may take a few seconds, especially if the agent needs to browse the web or extract information from PDF files.
+        - This space is designed as a testbed for Chappie's capabilities—feel free to experiment with a wide range of queries.
+        - For formal benchmarking, you can connect this agent to external evaluation datasets.
+
+        ---
+        ✨ _Chappie is a work in progress. Feedback and suggestions are always welcome!_
         """
-    )
+)
+
 
     gr.LoginButton()
 
