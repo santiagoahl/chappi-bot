@@ -135,6 +135,7 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     logging.info(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
+	time.sleep(15)
         task_id = item.get("task_id")
         question_text = item.get("question")
         filename = agent.questions_index[agent.questions_index["task_id"] == task_id]["file_name"].iloc[0]
