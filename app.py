@@ -29,7 +29,7 @@ sys.path.append(TOOLS_DIR)
 sys.path.append(SYS_MSG_DIR)
 
 import tools
-import react
+import react  # Q: Why does it too much time to import?
 
 # (Keep Constants as is)
 # --- Constants ---
@@ -59,7 +59,7 @@ class ReactAgent:
         file_path = self.eval_dir + filename
         response = requests.get(file_api_url, timeout=15)
         if response.status_code == 200:
-            with open(filename, "wb") as f:
+            with open(file_path, "wb") as f:
                 f.write(response.content)
 
     def __call__(self, question: str) -> str:
@@ -70,7 +70,7 @@ class ReactAgent:
                 agent_response = asyncio.run(
                     react.run_agent(user_query=question)
                 )
-                logging.info(f"Agent returning fixed answer: {agent_response}")
+                logging.info(f"Agent answer: {agent_response}")
                 return agent_response
             except RateLimitError as e:
                 wait_time = 2 ** attempt
@@ -135,7 +135,8 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     logging.info(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
-	time.sleep(15)
+        time.sleep(15)
+        
         task_id = item.get("task_id")
         question_text = item.get("question")
         filename = agent.questions_index[agent.questions_index["task_id"] == task_id]["file_name"].iloc[0]
