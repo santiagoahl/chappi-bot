@@ -43,7 +43,7 @@ async def initialize_tools():
             print("Tools already initialized")
             return
 
-        print("Initializing tools")
+        #print("Initializing tools")
         try:
             await import_local_modules()
             tools_list, clean_browser = await setup_tools()
@@ -363,14 +363,14 @@ async def run_agent(
 ) -> Union[str, float, int]:
     try:
         query = user_query if user_query else input("Pass your question: ")
-        response = await graph.ainvoke(
+        agent_response = await graph.ainvoke(
             input={"messages": [HumanMessage(content=query)]},
             config={
                 "callbacks": [langfuse_callback_handler],
                 "configurable": {"thread_id": "1"},
             },
         )
-        ai_answer = response.get("messages", [])[-1].content
+        ai_answer = agent_response.get("messages", [])[-1].content
         if print_response:
             print(ai_answer)
         return ai_answer
@@ -379,9 +379,22 @@ async def run_agent(
             await clean_browser_fn()
 
 
+# DEBUG
+user_query_debug = """
+How many studio albums were published by Mercedes Sosa between 2000 and 2009 (included)? You can use the latest 2022 version of english wikipedia.
+"""
+
+
 if __name__ == "__main__":
     if "dev" not in sys.argv:
-        asyncio.run(run_agent(print_response=True, clean_browser_fn=clean_browser))
+        agent_response = asyncio.run(
+                run_agent( 
+                    user_query=user_query_debug, 
+                    print_response=True, 
+                    clean_browser_fn=clean_browser
+                )
+        ) # DEBUG
+        print(agent_response)
 
 # TODO: Use a Local class for general path management
 # TODO: Modularize script
