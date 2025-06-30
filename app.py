@@ -135,15 +135,21 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     logging.info(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
-        time.sleep(15)
+        #time.sleep(15)
         
         task_id = item.get("task_id")
         question_text = item.get("question")
         filename = agent.questions_index[agent.questions_index["task_id"] == task_id]["file_name"].iloc[0]
         file_path = agent.eval_dir + filename
 
-        agent.save_file(task_id)
+        ## DEBUG block
+        if task_id == "840bfca7-4f7b-481a-8794-c560c340185d":
+            continue
+    #
+        #if len(filename) >= 0
+        #    agent.save_file(task_id)
         question_processed = f"Question: {question_text}\nAttached Files: {file_path}"
+
         if not task_id or question_text is None:
             logging.info(f"Skipping item with missing task_id or question: {item}")
             continue

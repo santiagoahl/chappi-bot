@@ -105,7 +105,7 @@ async def set_sys_msg(prompt_path: str):
 
 #SYSTEM_MESSAGE = asyncio.run(set_sys_msg(prompt_path=SYS_MSG_PATH))
 
-model = ChatOpenAI(model="gpt-4o", temperature=0.5)
+model = ChatOpenAI(model="gpt-4o", temperature=0.5, max_retries=3, timeout=15)
 langfuse_callback_handler = CallbackHandler()
 
 
