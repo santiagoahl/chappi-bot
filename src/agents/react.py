@@ -84,7 +84,7 @@ from tools import (
 # Load credentials
 # var = "OPENAI_API_KEY"
 # os.env[var] = os.getenv(var)
-MAX_ITERATIONS = 7
+MAX_ITERATIONS = 7  # Max agent node - tool node attempts
 ROOT_DIR = "/home/santiagoal/current-projects/chappie/"
 AGENT_PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts/agent/")
 #SYS_MSG_PATH = os.path.join(AGENT_PROMPTS_DIR, "gaia_system_message.md")
@@ -382,11 +382,11 @@ async def run_agent(
 # DEBUG
 user_query_debug = """
 How many studio albums were published by Mercedes Sosa between 2000 and 2009 (included)? You can use the latest 2022 version of english wikipedia.
-"""
-
+""" 
 
 if __name__ == "__main__":
     if "dev" not in sys.argv:
+        # Q: Can I visualize the event loop and parallel tasks?
         agent_response = asyncio.run(
                 run_agent( 
                     user_query=user_query_debug, 
@@ -394,7 +394,7 @@ if __name__ == "__main__":
                     clean_browser_fn=clean_browser
                 )
         ) # DEBUG
-        print(agent_response)
+        #print(agent_response)
 
 # TODO: Use a Local class for general path management
 # TODO: Modularize script
