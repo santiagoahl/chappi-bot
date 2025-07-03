@@ -1,8 +1,10 @@
 # Libraries
 from langchain_core.tools.base import BaseTool
+from langchain_core.prompts import PromptTemplate
 from langgraph.graph import START, END, StateGraph
 from typing import TypedDict, List, Optional, Literal, Union
 from langchain_openai import ChatOpenAI
+#from cv2 import cv2
 from langchain_core.messages import (
     HumanMessage,
     AIMessage,
@@ -197,7 +199,7 @@ async def tools_node(state: TaskState) -> dict[str, list]:
     return {"messages": result}
 
 
-async def agent(state: TaskState) -> dict:
+async def agent_node(state: TaskState) -> dict:
     """
     Agent node, contains the LLM Model used to process user requests.
 
@@ -268,6 +270,64 @@ async def agent(state: TaskState) -> dict:
     # output = {"messages": chat_history}
     # return output
 
+async def double_check_node(state: TaskState) -> dict:  # Q: Can I save tokens by passing just the format_msg + last ai response
+    """ 
+     Check the AI final message and correct / fix if it is required.
+
+     This is useful when the AI's output does not match the required format, in spite of the semantic correctness of it.
+
+     Parameters
+     ----------
+     state: TaskState
+     
+     Returns:
+         dict: State update with channels 'messages' and 'iteration' 
+     
+     Example:
+         >>> double_check_node({
+             "messages": [AIMessage("The answer is twenty four")],
+             "iteration": 1
+            })
+            '{
+             "messages": [
+                     AIMessage("The answer is twenty four"),
+                     AIMessage("24"),
+                 ],
+             "iteration": 1
+            }'
+     """
+    chat_history = state.get("messages", [])
+    iteration = state.get("iteration", 0)
+    
+    #  Get the last AI message 
+    ai_response =  chat_history[-1]  
+    ai_message_raw = ai_response.content
+    
+    #  Read the instructions to pass to the agent
+    request_to_format_path = os.path.join(AGENT_PROMPTS_DIR, "format_reponse_message.md")
+    instructions = ""   
+    with open(request_to_format_path, "r") as f:
+       for line in f:
+           instructions += line
+
+    # Prepare input to format
+    prompt_to_format =  PromptTemplate.from_template("Instructions: {instructions}\n\nAI message to format: {ai_message_raw}")
+    request_to_format_msg = prompt_to_format.invoke({
+            "instructions": instructions,
+            "ai_message_raw": ai_message_raw,
+        })
+    
+    # Ask AI for formatting
+    ai_msg_formated = await model_with_tools.invoke(input=AIMessage(request_to_format_msg))
+
+    # Save results
+    chat_history.append(ai_msg_formated)
+    state_update = {
+        "messages": chat_history, 
+        "iteration": iteration,
+    }
+
+    return state_update
 
 # Conditional Edges
 def should_use_tool(state: TaskState) -> Literal["tools", END]:
@@ -305,32 +365,38 @@ memory = MemorySaver()  # Add persistence
 builder = StateGraph(state_schema=TaskState)
 
 builder.add_node("prepare_agent", prepare_agent)
-builder.add_node("agent", agent)
+builder.add_node("agent", agent_node)
 builder.add_node("tools", tools_node)
+builder.add_node("double_check", double_check_node)  # Fix AI response
 
 builder.add_edge(START, "prepare_agent")
 builder.add_edge("prepare_agent", "agent")
 builder.add_conditional_edges(
-    source="agent", path=should_use_tool, path_map=["tools", END]
+    source="agent", path=should_use_tool, path_map=["tools", "double_check"]
 )
 builder.add_edge("tools", "agent")
+#builder.add_edge("agent", "double_check")
 # builder.add_edge("agent", END)
 
 # memory = MemorySaver()
 graph = builder.compile() if use_studio else builder.compile(checkpointer=memory)
 
 # Save graph
+
 # graph_json = graph.to_json()
 # with open("../../langgraph.json", "w") as f:
 #    f.write(graph_json)
 
+graph_image_bytes = graph.get_graph().draw_mermaid_png()
+with open("data/images/agent_architecture.png", "wb") as f:
+    f.write(graph_image_bytes)
 
 # Save graph image
-async def save_agent_architecture() -> None:
-    # TODO: the new images path is /home/santiagoal/current-projects/chappie/data/images
-    graph_image_bytes = await to_thread(lambda: graph.get_graph().draw_mermaid_png())
-    with open("./images/agent_architecture.png", "wb") as f:
-        f.write(graph_image_bytes)
+#sync def save_agent_architecture() -> None:
+#   # TODO: the new images path is /home/santiagoal/current-projects/chappie/data/images
+#   graph_image_bytes = await to_thread(lambda: graph.get_graph().draw_mermaid_png())
+#   with open("data/images/agent_architecture.png", "wb") as f:
+#       f.write(graph_image_bytes)
 
 
 # Test app
@@ -381,20 +447,21 @@ async def run_agent(
 
 # DEBUG
 user_query_debug = """
-How many studio albums were published by Mercedes Sosa between 2000 and 2009 (included)? You can use the latest 2022 version of english wikipedia.
+How many studio albums were published by Mercedes Sosa between 2000 and 2009 (included)? You can use the latest 2022 version of english wikipedia. Just return the number value.
 """ 
 
 if __name__ == "__main__":
-    if "dev" not in sys.argv:
-        # Q: Can I visualize the event loop and parallel tasks?
-        agent_response = asyncio.run(
-                run_agent( 
-                    user_query=user_query_debug, 
-                    print_response=True, 
-                    clean_browser_fn=clean_browser
-                )
-        ) # DEBUG
-        #print(agent_response)
+    print("Saving Agent Architecture...")
+    #if "dev" not in sys.argv:
+    #    # Q: Can I visualize the event loop and parallel tasks?
+    #    agent_response = asyncio.run(
+    #            run_agent( 
+    #                user_query=user_query_debug, 
+    #                print_response=True, 
+    #                clean_browser_fn=clean_browser
+    #            )
+    #    ) # DEBUG
+    #    #print(agent_response)
 
 # TODO: Use a Local class for general path management
 # TODO: Modularize script
