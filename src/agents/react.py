@@ -4,6 +4,7 @@ from langchain_core.prompts import PromptTemplate
 from langgraph.graph import START, END, StateGraph
 from typing import TypedDict, List, Optional, Literal, Union
 from langchain_openai import ChatOpenAI
+import logging
 #from cv2 import cv2
 from langchain_core.messages import (
     HumanMessage,
@@ -29,6 +30,8 @@ from langchain_community.agent_toolkits.playwright.toolkit import (
     PlayWrightBrowserToolkit,
 )
 import asyncio
+
+#logging.basicConfig(level=logging.info)
 
 tools_list = []
 clean_browser = None
@@ -312,13 +315,13 @@ async def double_check_node(state: TaskState) -> dict:  # Q: Can I save tokens b
 
     # Prepare input to format
     prompt_to_format =  PromptTemplate.from_template("Instructions: {instructions}\n\nAI message to format: {ai_message_raw}")
-    request_to_format_msg = prompt_to_format.invoke({
+    prompt_value = prompt_to_format.invoke({
             "instructions": instructions,
             "ai_message_raw": ai_message_raw,
         })
-    
+    formatted_request = SystemMessage(content=prompt_value.to_string())
     # Ask AI for formatting
-    ai_msg_formated = await model_with_tools.invoke(input=AIMessage(request_to_format_msg))
+    ai_msg_formated = await model_with_tools.ainvoke(input=[formatted_request])
 
     # Save results
     chat_history.append(ai_msg_formated)
@@ -330,7 +333,7 @@ async def double_check_node(state: TaskState) -> dict:  # Q: Can I save tokens b
     return state_update
 
 # Conditional Edges
-def should_use_tool(state: TaskState) -> Literal["tools", END]:
+def should_use_tool(state: TaskState) -> Literal["tools", "double_check"]:
     """
     Decides if using a tool is necessary to accomplish the task.
 
@@ -354,10 +357,10 @@ def should_use_tool(state: TaskState) -> Literal["tools", END]:
     current_iterations = state.get("iteration", 0)
 
     if current_iterations > MAX_ITERATIONS:
-        return END
+        return "double_check"
     elif isinstance(last_message, AIMessage) and last_message.tool_calls:
         return "tools"
-    return END
+    return "double_check"
 
 
 # Build Graph
@@ -376,7 +379,7 @@ builder.add_conditional_edges(
 )
 builder.add_edge("tools", "agent")
 #builder.add_edge("agent", "double_check")
-# builder.add_edge("agent", END)
+builder.add_edge("double_check", END)
 
 # memory = MemorySaver()
 graph = builder.compile() if use_studio else builder.compile(checkpointer=memory)
@@ -451,17 +454,17 @@ How many studio albums were published by Mercedes Sosa between 2000 and 2009 (in
 """ 
 
 if __name__ == "__main__":
-    print("Saving Agent Architecture...")
-    #if "dev" not in sys.argv:
-    #    # Q: Can I visualize the event loop and parallel tasks?
-    #    agent_response = asyncio.run(
-    #            run_agent( 
-    #                user_query=user_query_debug, 
-    #                print_response=True, 
-    #                clean_browser_fn=clean_browser
-    #            )
-    #    ) # DEBUG
-    #    #print(agent_response)
+    
+    if "dev" not in sys.argv:
+        # Q: Can I visualize the event loop and parallel tasks?
+        agent_response = asyncio.run(
+                run_agent( 
+                    user_query=user_query_debug, 
+                    print_response=True, 
+                    clean_browser_fn=clean_browser
+                )
+        ) # DEBUG
+        #print(agent_response)
 
 # TODO: Use a Local class for general path management
 # TODO: Modularize script
