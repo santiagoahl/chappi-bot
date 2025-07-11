@@ -144,7 +144,7 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
         file_path = agent.eval_dir + filename
 
         ## DEBUG block
-        if task_id == "840bfca7-4f7b-481a-8794-c560c340185d":
+        if task_id != "3cef3a44-215e-4aed-8e3b-b1e3f08063b7":
             continue
     #
         #if len(filename) >= 0
