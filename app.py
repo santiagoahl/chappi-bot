@@ -117,7 +117,7 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
         response.raise_for_status()
         questions_data = response.json()
         if not questions_data:
-             logging.info("Fetched questions list is empty.")
+             logging.info("Fetched questions list is empty")
              return "Fetched questions list is empty or invalid format.", None
         logging.info(f"Fetched {len(questions_data)} questions.")
     except requests.exceptions.RequestException as e:
@@ -148,8 +148,10 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
         #if task_id != "3cef3a44-215e-4aed-8e3b-b1e3f08063b7":
         #    continue
         #
-        #if len(filename) >= 0
-        #    agent.save_file(task_id)
+
+        # Save file locally
+        if len(filename) >= 0
+            agent.save_file(task_id)
         question_processed = f"Question: {question_text}\nAttached Files: {file_path}"
 
         if not task_id or question_text is None:
