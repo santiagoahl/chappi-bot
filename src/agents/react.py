@@ -55,7 +55,7 @@ debug_handler = logging.StreamHandler()
 debug_handler.setLevel(level=logging.DEBUG)
 
 ## Set logs formatter
-logs_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+logs_format = "%(asctime)s [%(levelname)s] %(message)s"
 formatter = logging.Formatter(fmt=logs_format)
 logs_handler.setFormatter(fmt=formatter)
 debug_handler.setFormatter(fmt=formatter)

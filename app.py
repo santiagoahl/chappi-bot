@@ -136,17 +136,18 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     logging.info(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
-        #time.sleep(15)
+        logging.info("Sleeping 1 minute to prevent tokens per minute error")
+        time.sleep(61)
         
         task_id = item.get("task_id")
         question_text = item.get("question")
         filename = agent.questions_index[agent.questions_index["task_id"] == task_id]["file_name"].iloc[0]
         file_path = agent.eval_dir + filename
 
-        ## DEBUG block
-        if task_id != "3cef3a44-215e-4aed-8e3b-b1e3f08063b7":
-            continue
-    #
+        ### DEBUG block
+        #if task_id != "3cef3a44-215e-4aed-8e3b-b1e3f08063b7":
+        #    continue
+        #
         #if len(filename) >= 0
         #    agent.save_file(task_id)
         question_processed = f"Question: {question_text}\nAttached Files: {file_path}"
