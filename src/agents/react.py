@@ -33,12 +33,11 @@ from langchain_community.agent_toolkits.playwright.toolkit import (
 )
 import asyncio
 
-logs_mode = False
-debug_mode = False
+logs_mode = True
+debug_mode = True
 save_agent_architecture = True
 
 # Set up logger and debugger
-
 logger = logging.getLogger(name="react")  # Initialize logger
 logger.handlers.clear()  # Remove existing handlers
 logger.setLevel(level=logging.INFO)  # Level of observability
@@ -55,7 +54,7 @@ debug_handler = logging.StreamHandler()
 debug_handler.setLevel(level=logging.DEBUG)
 
 ## Set logs formatter
-logs_format = "%(asctime)s [%(levelname)s] %(message)s"
+logs_format = "%(asctime)s | %(name)s [%(levelname)s] %(message)s"
 formatter = logging.Formatter(fmt=logs_format)
 logs_handler.setFormatter(fmt=formatter)
 debug_handler.setFormatter(fmt=formatter)
@@ -189,7 +188,7 @@ async def setup_tools():
     ]
 
     playwright = await async_playwright().start()
-    browser = await playwright.chromium.launch(headless=True)
+    browser = await playwright.firefox.launch(headless=True, timeout=300000)
 
     async def cleanup_browser():
         await browser.close()
@@ -475,9 +474,9 @@ def should_use_tool(state: TaskState) -> Literal["tools", "double_check"]:
         return "tools"
     return "double_check"
 
-
 if logs_mode:
     logger.info("Preparing Agent...")
+
 # Build Graph
 memory = MemorySaver()  # Add persistence
 builder = StateGraph(state_schema=TaskState)

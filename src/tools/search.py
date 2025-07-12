@@ -207,7 +207,7 @@ def test_fetch_pdf() -> None:
     user_query = input("Pass a pdf in the web to extract: ")
 
     async def inner():
-        result = await fetch_pdf_text.ainvoke(input=user_query)
+        result = await fetch_online_pdf.ainvoke(input=user_query)
         print("Results")
         print("=" * 40)
         print(result)
