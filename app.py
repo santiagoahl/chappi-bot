@@ -136,8 +136,8 @@ def run_and_submit_all( profile: gr.OAuthProfile | None):
     answers_payload = []
     logging.info(f"Running agent on {len(questions_data)} questions...")
     for item in questions_data:
-        logging.info("Sleeping 1 minute to prevent tokens per minute error")
-        time.sleep(61)
+        logging.info("Sleeping 2 minutes to prevent TPM limit error")
+        time.sleep(121)
         
         task_id = item.get("task_id")
         question_text = item.get("question")
@@ -240,8 +240,7 @@ with gr.Blocks() as demo:
         ✨ _Chappie is a work in progress. Feedback and suggestions are always welcome!_
         """
 )
-
-
+    
     gr.LoginButton()
 
     run_button = gr.Button("Run Evaluation & Submit All Answers")

@@ -104,7 +104,10 @@ rm external/chess-modules/stockfish-ubuntu-x86-64-avx2.tar
 2. Change repo name from chappie to chappi-e
 Probably use an `init.sh` script
 
+3. Include a bash script to download bin files (e.g. [Stockfish](https://github.com/official-stockfish/Stockfish/releases/download/sf_17.1/stockfish-ubuntu-x86-64-avx2.tar))
+
 ---
 
 # References
 - For the Chess tool, we leveraged [board_to_fen](https://github.com/mcdominik/board_to_fen) and [Stockfish 17.1](https://github.com/official-stockfish/Stockfish)
+
