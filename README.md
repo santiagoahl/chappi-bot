@@ -15,7 +15,7 @@ This project uses [__Poetry__](__https://python-poetry.org/__) for dependency ma
 ### **1. Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/chappie.git
+git clone https://github.com/santiagoahl/chappi-bot.git
 cd chappie
 ````
 
@@ -97,3 +97,4 @@ Probably use an `init.sh` script
 
 # References
 - For the Chess tool, we leveraged [board_to_fen](https://github.com/mcdominik/board_to_fen) and [Stockfish 17.1](https://github.com/official-stockfish/Stockfish)
+
