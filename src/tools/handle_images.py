@@ -1,6 +1,11 @@
 from langchain.tools import tool
+from typing import Optional
 from ultralytics import YOLO
 import subprocess
+import numpy as np
+import matplotlib.pyplot as plt
+import easyocr
+import re
 
 
 @tool
@@ -76,25 +81,73 @@ def detect_objects(
     return processed_data
 
 
-def test_detect_objects():
-    print("Testing Object Detection Task...")
-    objects = detect_objects.invoke(
-        input={
-            "video_path": "data/temp/processed_yt_video.mp4",
-            "remove_after": False,
-            "yolo_model": "external/ai-models/best.pt"
-        }
-    )
-    print("\n")
-    print("=" * 30)
-    print("\nResults: \n")
-    print(objects)
+def extract_text_from_img(path: str, gpu: bool = False) -> str:
+    """
+    Description.
+
+    Parameters
+    ----------
+    arg1 : type
+        Description
+    arg2 : type
+        Description
+    arg3 : type
+        Description
+
+    Returns:
+        type:
+
+    Example:
+        >>> ('arg1', 'arg2')
+        'output'
+    """
+    # TODO: validate users
+    # Q: How to use a gpu
+    img_obj = plt.imread(path)
+    text_detector = easyocr.Reader(["es"], gpu=gpu)
+    extracted_text_raw = text_detector.readtext(path)
+    extracted_text = "\n".join([element[1] for element in extracted_text_raw])
+
+    regex = r"^M\d{7}$" # Format of text
+
+    payment_reference = re.search(regex, extracted_text, re.MULTILINE).group(0)
+    return payment_reference
+
+
+class TestTool:
+    def __init__(self):
+        pass
+
+
+class TestObjectDetection(TestTool):
+    def test(self):
+        print("Testing Object Detection Task...")
+        objects = detect_objects.invoke(
+            input={
+                "video_path": "data/temp/processed_yt_video.mp4",
+                "remove_after": False,
+                "yolo_model": "external/ai-models/best.pt",
+            }
+        )
+        print("\n")
+        print("=" * 30)
+        print("\nResults: \n")
+        print(objects)
+
+
+class TestTextExtraction(TestTool):
+    def test(self):
+        return extract_text_from_img(
+            path="data/temp-data/WhatsApp Image 2025-08-07 at 4.51.21 PM.jpeg",
+            gpu=False,
+        )
 
 
 if __name__ == "__main__":
-    test_detect_objects()
+    tester = TestTextExtraction()
+    print(tester.test())
 
 
 # TODO: make this a typed dict to let the agent better process this data
 # TODO: Delete unnecesary videos
-# TODO: Change folder name: tools_poc/ -> tools-poc/
+# TODO: Change folder name: tools_poc/ -> tools-poc
