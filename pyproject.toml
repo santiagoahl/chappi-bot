@@ -57,6 +57,7 @@ unstructured = "^0.18.1"
 gradio = {extras = ["oauth"], version = "^5.35.0"}
 openai = "^1.93.0"
 logging = "^0.4.9.6"
+fastapi = "^0.116.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

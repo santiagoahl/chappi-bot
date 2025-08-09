@@ -81,21 +81,20 @@ def detect_objects(
     return processed_data
 
 
+# TODO: [Implement SOLID principles] Extend to pattern, file, etc; Inherit for specific use case (payment reference extraction)
 def extract_text_from_img(path: str, gpu: bool = False) -> str:
     """
-    Description.
+    Use AI Model (OCR) to extract the text from an image
 
     Parameters
     ----------
-    arg1 : type
-        Description
-    arg2 : type
-        Description
-    arg3 : type
-        Description
+    path: str
+        Path to local file # TODO: consider whether we should pass a path or better should we leverage a DB to do so
+    gpu: bool
+        Use hardware accelerator (pass True iff you have a cuda-like GPU)
 
     Returns:
-        type:
+        str: payment_reference
 
     Example:
         >>> ('arg1', 'arg2')
@@ -108,7 +107,7 @@ def extract_text_from_img(path: str, gpu: bool = False) -> str:
     extracted_text_raw = text_detector.readtext(path)
     extracted_text = "\n".join([element[1] for element in extracted_text_raw])
 
-    regex = r"^M\d{7}$" # Format of text
+    regex = r"^M(\d{7}|\d{8})$" # Format of text
 
     payment_reference = re.search(regex, extracted_text, re.MULTILINE).group(0)
     return payment_reference

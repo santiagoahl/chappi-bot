@@ -590,3 +590,4 @@ if __name__ == "__main__":
 
 # TODO: Use a Local class for general path management
 # TODO: Modularize script
+# TODO: Apply solid principles
