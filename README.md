@@ -1,6 +1,6 @@
 # **🤖 Chappi-bot**
 
-Chappi-e is a lightweight AI assistant agent built using the ********React architecture******** with [__LangGraph__](__https://docs.langgraph.dev/__). It is designed to reason, plan, and execute actions using tools in a flexible and modular workflow.
+Chappi-bot is a lightweight AI assistant agent built using the ********React architecture******** with [__LangGraph__](__https://docs.langgraph.dev/__). It is designed to reason, plan, and execute actions using tools in a flexible and modular workflow.
 
 ---
 
@@ -97,4 +97,5 @@ Probably use an `init.sh` script
 
 # References
 - For the Chess tool, we leveraged [board_to_fen](https://github.com/mcdominik/board_to_fen) and [Stockfish 17.1](https://github.com/official-stockfish/Stockfish)
+
 
